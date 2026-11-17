@@ -5,9 +5,11 @@
  * @var array{left: string[], right: string[]} $layout
  * @var array{left: string[], right: string[]} $adminLayout
  * @var \humhub\modules\space\models\Space[] $spaces
+ * @var array<int, array{name: string, spaces: \humhub\modules\space\models\Space[], children: array<int, array{name: string, spaces: \humhub\modules\space\models\Space[]}>}>|null $spaceGroups
  * @var \humhub\modules\space\models\Space|null $selected
  * @var string $audience
  * @var string[] $checkedGuids
+ * @var string[] $feedSpaceGuids
  */
 
 use humhub\helpers\Html;
@@ -150,16 +152,43 @@ $allowed = array_merge($adminLayout['left'], $adminLayout['right']);
                     </div>
                 </div>
                 <?php if (count($spaces) > 1): ?>
-                    <ul class="tc-feed-audience__list" data-audience="spaces"<?= $everyone ? ' hidden' : '' ?>>
-                        <?php foreach ($spaces as $space): ?>
-                            <li>
-                                <label>
-                                    <input type="checkbox" value="<?= Html::encode($space->guid) ?>"<?= in_array($space->guid, $checkedGuids, true) ? ' checked' : '' ?>>
-                                    <span><?= Html::encode($space->name) ?></span>
-                                </label>
-                            </li>
-                        <?php endforeach; ?>
-                    </ul>
+                    <?php
+                    $spaceChoice = static function ($space) use ($checkedGuids): string {
+                        return '<li><label><input type="checkbox" value="' . Html::encode($space->guid) . '"'
+                            . (in_array($space->guid, $checkedGuids, true) ? ' checked' : '')
+                            . '><span>' . Html::encode($space->name) . '</span></label></li>';
+                    };
+                    ?>
+                    <?php if ($spaceGroups === null): ?>
+                        <ul class="tc-feed-audience__list" data-audience="spaces"<?= $everyone ? ' hidden' : '' ?>>
+                            <?php foreach ($spaces as $space) {
+                                echo $spaceChoice($space);
+                            } ?>
+                        </ul>
+                    <?php else: ?>
+                        <div class="tc-feed-audience__groups" data-audience="spaces"<?= $everyone ? ' hidden' : '' ?>>
+                            <?php foreach ($spaceGroups as $group): ?>
+                                <section class="tc-feed-audience__group">
+                                    <h3><?= Html::encode($group['name']) ?></h3>
+                                    <?php if ($group['spaces'] !== []): ?>
+                                        <ul class="tc-feed-audience__list">
+                                            <?php foreach ($group['spaces'] as $space) {
+                                                echo $spaceChoice($space);
+                                            } ?>
+                                        </ul>
+                                    <?php endif; ?>
+                                    <?php foreach ($group['children'] as $child): ?>
+                                        <h4><?= Html::encode($child['name']) ?></h4>
+                                        <ul class="tc-feed-audience__list">
+                                            <?php foreach ($child['spaces'] as $space) {
+                                                echo $spaceChoice($space);
+                                            } ?>
+                                        </ul>
+                                    <?php endforeach; ?>
+                                </section>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php endif; ?>
                     <p id="tc-feed-audience-error" class="tc-feed-audience__error" hidden></p>
                 <?php endif; ?>
                 <div id="tc-feed-composer-slot">
@@ -191,7 +220,10 @@ $allowed = array_merge($adminLayout['left'], $adminLayout['right']);
 
         <?= StreamViewer::widget([
             'id' => 'thiscovery-feed-stream',
-            'options' => ['class' => 'tc-feed-stream'],
+            'options' => [
+                'class' => 'tc-feed-stream',
+                'data-feed-spaces' => json_encode($feedSpaceGuids, JSON_THROW_ON_ERROR),
+            ],
             'streamAction' => '/thiscovery-feed/feed/stream',
             'showFilters' => false,
             'messageStreamEmpty' => Yii::t('ThiscoveryFeedModule.base', '<strong>Your feed is empty.</strong><br>Join a space to see posts here.'),

@@ -9,6 +9,7 @@ namespace humhub\modules\thiscoveryFeed\widgets;
 
 use humhub\components\Widget;
 use humhub\modules\space\models\Membership;
+use humhub\modules\thiscoveryFeed\services\SpaceCategoryService;
 use humhub\modules\user\models\User;
 
 class Shortcuts extends Widget
@@ -24,16 +25,25 @@ class Shortcuts extends Widget
         }
 
         $spaces = [];
-        foreach (Membership::findByUser($this->user)->limit($this->spaceLimit + 1)->all() as $membership) {
+        foreach (Membership::findByUser($this->user)->all() as $membership) {
             if ($membership->space) {
                 $spaces[] = $membership->space;
             }
         }
+        $groups = SpaceCategoryService::tree($spaces);
+        if ($groups === null) {
+            $visible = array_slice($spaces, 0, $this->spaceLimit);
+            $hasMoreSpaces = count($spaces) > $this->spaceLimit;
+        } else {
+            $visible = SpaceCategoryService::ordered($spaces);
+            $hasMoreSpaces = false;
+        }
 
         return $this->render('shortcuts', [
             'user' => $this->user,
-            'spaces' => array_slice($spaces, 0, $this->spaceLimit),
-            'hasMoreSpaces' => count($spaces) > $this->spaceLimit,
+            'spaces' => $visible,
+            'groups' => $groups,
+            'hasMoreSpaces' => $hasMoreSpaces,
         ]);
     }
 }

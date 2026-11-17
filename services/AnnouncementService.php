@@ -20,7 +20,7 @@ use Yii;
 final class AnnouncementService
 {
     /**
-     * @return array<int, array{url: string, space: string, title: string, excerpt: string, time: string}>
+     * @return array<int, array{url: string, spaces: array<int, array{name: string, url: string}>, title: string, excerpt: string, time: string}>
      */
     public static function forUser(User $user, int $limit): array
     {
@@ -70,7 +70,7 @@ final class AnnouncementService
     }
 
     /**
-     * @return array{url: string, space: string, title: string, excerpt: string, time: string}|null
+     * @return array{url: string, spaces: array<int, array{name: string, url: string}>, title: string, excerpt: string, time: string}|null
      */
     private static function present(Content $content): ?array
     {
@@ -100,9 +100,17 @@ final class AnnouncementService
 
         $when = $content->created_at ?: $content->updated_at;
 
+        $spaces = [];
+        foreach (FeedShareService::spaces($content) as $space) {
+            $spaces[] = [
+                'name' => $space->name,
+                'url' => $space->getUrl(),
+            ];
+        }
+
         return [
             'url' => $content->getUrl(),
-            'space' => FeedShareService::spaceLabel($content),
+            'spaces' => $spaces,
             'title' => $title,
             'excerpt' => $excerpt,
             'time' => $when ? Yii::$app->formatter->asRelativeTime($when) : '',

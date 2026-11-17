@@ -1,14 +1,14 @@
 <?php
 
 /**
- * @var array<int, array{url: string, space: string, title: string, excerpt: string, time: string}> $items
+ * @var array<int, array{url: string, spaces: array<int, array{name: string, url: string}>, title: string, excerpt: string, time: string}> $items
  */
 
 use humhub\helpers\Html;
 
 ?>
 
-<section class="tc-feed-card">
+<section class="tc-feed-card tc-feed-announcements-card">
     <h2><?= Yii::t('ThiscoveryFeedModule.base', 'Announcements') ?></h2>
 
     <?php if ($items === []): ?>
@@ -17,13 +17,18 @@ use humhub\helpers\Html;
         <ul class="tc-feed-announcements">
             <?php foreach ($items as $item): ?>
                 <li>
-                    <a href="<?= Html::encode($item['url']) ?>">
-                        <span class="tc-feed-announcement__meta">
-                            <span><?= Html::encode($item['space']) ?></span>
-                            <?php if ($item['time'] !== ''): ?>
-                                <time><?= Html::encode($item['time']) ?></time>
-                            <?php endif; ?>
+                    <span class="tc-feed-announcement__meta">
+                        <span class="tc-feed-announcement__spaces">
+                            <?php foreach ($item['spaces'] as $index => $space): ?>
+                                <?php if ($index > 0): ?>, <?php endif; ?>
+                                <a href="<?= Html::encode($space['url']) ?>"><?= Html::encode($space['name']) ?></a>
+                            <?php endforeach; ?>
                         </span>
+                        <?php if ($item['time'] !== ''): ?>
+                            <time><?= Html::encode($item['time']) ?></time>
+                        <?php endif; ?>
+                    </span>
+                    <a href="<?= Html::encode($item['url']) ?>">
                         <?php if ($item['title'] !== ''): ?>
                             <span class="tc-feed-announcement__title"><?= Html::encode($item['title']) ?></span>
                         <?php endif; ?>

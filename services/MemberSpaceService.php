@@ -39,4 +39,24 @@ final class MemberSpaceService
 
         return array_values(array_map('intval', $ids));
     }
+
+    /**
+     * @return string[]
+     */
+    public static function guids(User $user): array
+    {
+        $guids = (new Query())
+            ->select('space.guid')
+            ->from('space_membership')
+            ->innerJoin('space', 'space.id = space_membership.space_id')
+            ->where([
+                'space_membership.user_id' => $user->id,
+                'space_membership.status' => Membership::STATUS_MEMBER,
+                'space_membership.show_at_dashboard' => 1,
+                'space.status' => Space::STATUS_ENABLED,
+            ])
+            ->column();
+
+        return array_values(array_filter($guids, 'is_string'));
+    }
 }

@@ -3,6 +3,7 @@
 /**
  * @var \humhub\modules\user\models\User $user
  * @var \humhub\modules\space\models\Space[] $spaces
+ * @var array<int, array{name: string, spaces: \humhub\modules\space\models\Space[], children: array<int, array{name: string, spaces: \humhub\modules\space\models\Space[]}>}>|null $groups
  * @var bool $hasMoreSpaces
  */
 
@@ -26,7 +27,7 @@ use yii\helpers\Url;
 
     <?php if ($spaces === []): ?>
         <p class="tc-feed-empty"><?= Yii::t('ThiscoveryFeedModule.base', 'You have not joined a space yet.') ?></p>
-    <?php else: ?>
+    <?php elseif ($groups === null): ?>
         <ul class="tc-feed-spaces">
             <?php foreach ($spaces as $space): ?>
                 <li>
@@ -37,6 +38,35 @@ use yii\helpers\Url;
                 </li>
             <?php endforeach; ?>
         </ul>
+    <?php else: ?>
+        <?php foreach ($groups as $group): ?>
+            <h3 class="tc-feed-spaces__category"><?= Html::encode($group['name']) ?></h3>
+            <?php if ($group['spaces'] !== []): ?>
+                <ul class="tc-feed-spaces">
+                    <?php foreach ($group['spaces'] as $space): ?>
+                        <li>
+                            <a href="<?= Html::encode($space->getUrl()) ?>">
+                                <?= SpaceImage::widget(['space' => $space, 'width' => 28, 'link' => false]) ?>
+                                <span><?= Html::encode($space->name) ?></span>
+                            </a>
+                        </li>
+                    <?php endforeach; ?>
+                </ul>
+            <?php endif; ?>
+            <?php foreach ($group['children'] as $child): ?>
+                <h4 class="tc-feed-spaces__child"><?= Html::encode($child['name']) ?></h4>
+                <ul class="tc-feed-spaces">
+                    <?php foreach ($child['spaces'] as $space): ?>
+                        <li>
+                            <a href="<?= Html::encode($space->getUrl()) ?>">
+                                <?= SpaceImage::widget(['space' => $space, 'width' => 28, 'link' => false]) ?>
+                                <span><?= Html::encode($space->name) ?></span>
+                            </a>
+                        </li>
+                    <?php endforeach; ?>
+                </ul>
+            <?php endforeach; ?>
+        <?php endforeach; ?>
     <?php endif; ?>
 
     <a class="tc-feed-more" href="<?= Html::encode(Url::to(['/space/spaces'])) ?>">

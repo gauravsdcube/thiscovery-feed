@@ -42,7 +42,7 @@ final class PostableSpaceService
             $spaces[] = $space;
         }
 
-        return $spaces;
+        return SpaceCategoryService::ordered($spaces);
     }
 
     /**

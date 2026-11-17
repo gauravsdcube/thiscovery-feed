@@ -20,6 +20,7 @@ return [
     'Left column' => '',
     'Manage the feed' => '',
     'Nothing is pinned in your spaces yet.' => '',
+    'Other' => '',
     'Order' => '',
     'Pinned posts from your spaces.' => '',
     'Post to' => '',

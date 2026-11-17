@@ -15,7 +15,9 @@ use humhub\modules\thiscoveryFeed\Module;
 use humhub\modules\thiscoveryFeed\services\AudienceService;
 use humhub\modules\thiscoveryFeed\services\FeedPublisher;
 use humhub\modules\thiscoveryFeed\services\LayoutService;
+use humhub\modules\thiscoveryFeed\services\MemberSpaceService;
 use humhub\modules\thiscoveryFeed\services\PostableSpaceService;
+use humhub\modules\thiscoveryFeed\services\SpaceCategoryService;
 use humhub\modules\user\models\User;
 use Yii;
 use yii\web\ForbiddenHttpException;
@@ -60,9 +62,11 @@ class FeedController extends Controller
             'layout' => $module->layoutFor($user),
             'adminLayout' => $module->adminLayout(),
             'spaces' => $spaces,
+            'spaceGroups' => SpaceCategoryService::tree($spaces),
             'selected' => $spaces[0] ?? null,
             'audience' => $audience,
             'checkedGuids' => [],
+            'feedSpaceGuids' => MemberSpaceService::guids($user),
         ]);
     }
 

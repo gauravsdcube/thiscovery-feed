@@ -1,6 +1,14 @@
 humhub.module('thiscoveryFeed', function (module, require, $) {
     var event = require('event');
+    var Widget = require('ui.widget').Widget;
+    var loader = require('ui.loader');
+    var string = require('util').string;
+    var view = require('ui.view');
+    var i18n = require('i18n');
+    var user = require('user');
     var bound = false;
+
+    var badgeTemplate = '<div id="streamUpdateBadge" class="animated bounceIn"><span class="badge text-bg-info" style="cursor:pointer"><i class="fa fa-arrow-circle-up"></i> {text}</span></div>';
 
     var root = function () {
         return $('.tc-feed-composer');
@@ -111,6 +119,16 @@ humhub.module('thiscoveryFeed', function (module, require, $) {
                 rememberTargets(composerForm());
             }, true);
 
+            event.on('humhub:modules:content:live:NewContent.thiscoveryFeed', function (evt, events) {
+                var stream = Widget.instance($('#thiscovery-feed-stream'));
+                if (!stream || !stream.$ || !stream.$.length || !events || !events.length) {
+                    return;
+                }
+                if (feedHasUpdate(stream, events)) {
+                    showUpdateBadge(stream);
+                }
+            });
+
             event.on('humhub:content:beforeSubmit.thiscoveryFeed', function (evt, formWidget) {
                 if (!formWidget || !formWidget.$ || !formWidget.$.closest('.tc-feed-composer').length) {
                     return;
@@ -118,6 +136,84 @@ humhub.module('thiscoveryFeed', function (module, require, $) {
                 pointSubmit();
                 rememberTargets(formWidget.$.find('form'));
             });
+        }
+    };
+
+    var feedSpaceGuids = function () {
+        try {
+            return JSON.parse($('#thiscovery-feed-stream').attr('data-feed-spaces') || '[]');
+        } catch (error) {
+            return [];
+        }
+    };
+
+    var feedHasUpdate = function (stream, events) {
+        var spaces = feedSpaceGuids();
+        var found = false;
+        $.each(events, function (index, liveEvent) {
+            var data = liveEvent.data || {};
+            if (data.streamChannel && data.streamChannel !== 'default') {
+                return;
+            }
+            if (!data.insert || !data.sguid || spaces.indexOf(data.sguid) === -1) {
+                return;
+            }
+            if (stream.entry && stream.entry(data.contentId)) {
+                return;
+            }
+            if (stream.submitLock && data.originator === user.guid()) {
+                return;
+            }
+            found = true;
+        });
+        return found;
+    };
+
+    var showUpdateBadge = function (stream) {
+        if (stream.submitLock || $('#streamUpdateBadge').length) {
+            return;
+        }
+
+        var $badge = $(string.template(badgeTemplate, {
+            text: i18n.t('ContentModule.base', 'New Updates Available!')
+        }));
+        var appendToStream = function () {
+            stream.$.prepend($badge.css({position: '', display: 'block'}));
+            $badge.data('appended', true);
+        };
+
+        $('body').append($badge);
+
+        var topOffset = view.getContentTop();
+        $badge.css({
+            position: 'fixed',
+            top: (topOffset + 20) + 'px',
+            left: (stream.$.offset().left + (stream.$.width() / 2) - ($badge.find('span').width() / 2)) + 'px',
+            display: 'inline-block',
+            'text-align': 'center',
+            'z-index': 9999,
+            'margin-top': '15px',
+            'margin-bottom': '15px'
+        }).on('click', function () {
+            var load = function () {
+                loader.set($badge, {css: {padding: '4px'}});
+                stream.loadUpdate().finally(function () {
+                    $badge.remove();
+                });
+            };
+
+            if ($badge.data('appended')) {
+                load();
+            } else {
+                $('html').animate({scrollTop: 0}, 'slow', function () {
+                    appendToStream();
+                    load();
+                });
+            }
+        });
+
+        if (($(window).scrollTop() + topOffset - stream.$.position().top) < 0) {
+            appendToStream();
         }
     };
 

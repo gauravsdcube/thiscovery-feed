@@ -114,9 +114,13 @@ final class FeedPublisher
         }
 
         try {
-            $result = Post::getDb()->transaction(static fn() => WallCreateContentForm::create($post, $space));
+            $result = WallCreateContentForm::create($post, $space);
         } catch (Throwable $e) {
             Yii::error($e, 'thiscovery-feed');
+            if ($post->content && $post->content->id) {
+                return $this->entryResponse($post->content);
+            }
+
             return ['errors' => ['message' => [Yii::t('ThiscoveryFeedModule.base', 'The post could not be published.')]]];
         }
 
@@ -186,21 +190,66 @@ final class FeedPublisher
     private function copyFile(File $source): ?File
     {
         try {
+            $content = $source->getStore()->getContent();
+            if ($content === '') {
+                Yii::warning('Feed could not read a file to copy it into another space.', 'thiscovery-feed');
+                return null;
+            }
+
             $copy = new File();
             $copy->file_name = $source->file_name;
             $copy->mime_type = $source->mime_type;
             $copy->size = (int) $source->size;
             $copy->title = $source->title;
             $copy->show_in_stream = $source->show_in_stream;
+            $copy->hash_sha1 = $this->fileHash($source);
             if (!$copy->save()) {
                 return null;
             }
-            $copy->getStore()->setContent($source->getStore()->getContent());
+            $copy->getStore()->setContent($content);
 
             return $copy;
         } catch (Throwable $e) {
             Yii::warning($e->getMessage(), 'thiscovery-feed');
             return null;
+        }
+    }
+
+    /**
+     * The copied file must keep the source checksum. Building the stream card
+     * asks for that checksum, and the storage used here has no local filesystem
+     * handle to calculate it again.
+     */
+    private function fileHash(File $source): ?string
+    {
+        if (is_string($source->hash_sha1) && $source->hash_sha1 !== '') {
+            return $source->hash_sha1;
+        }
+
+        $store = $source->getStore();
+        if (!method_exists($store, 'checksum')) {
+            return null;
+        }
+
+        $hash = $store->checksum();
+
+        return is_string($hash) && $hash !== '' ? $hash : null;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function entryResponse(Content $content): array
+    {
+        try {
+            return StreamEntryResponse::getAsArray(
+                $content,
+                (new WallStreamEntryOptions())->viewContext(WallStreamEntryOptions::VIEW_CONTEXT_DASHBOARD),
+            );
+        } catch (Throwable $e) {
+            Yii::warning($e->getMessage(), 'thiscovery-feed');
+
+            return ['id' => (int) $content->id];
         }
     }
 

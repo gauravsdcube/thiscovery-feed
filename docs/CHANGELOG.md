@@ -4,6 +4,13 @@ Copyright (c) 2026 D Cube Consulting. All rights reserved.
 
 All notable changes to this module are documented in this file.
 
+## 1.0.2 (November 17, 2026)
+
+- Enh: With Classified Spaces enabled, the space picker and shortcuts list spaces inside their categories, in the sort order set there
+- Fix: A post with a file is saved in every selected space, not only the first
+- Enh: Announcement headings and space names are larger, and each space name opens that space
+- Enh: The feed uses HumHub's live poll and shows the same new-posts banner as a space or the Dashboard
+
 ## 1.0.1 (November 17, 2026)
 
 - Enh: The space picker uses columns when a member can post in many spaces

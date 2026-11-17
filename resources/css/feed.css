@@ -114,6 +114,23 @@
     margin-top: 8px;
 }
 
+.tc-feed-spaces__category,
+.tc-feed-spaces__child {
+    margin: 12px 0 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: var(--bs-secondary-color, #667085);
+}
+
+.tc-feed-spaces__child {
+    margin-left: 8px;
+    text-transform: none;
+    letter-spacing: 0;
+    font-size: 0.8rem;
+}
+
 .tc-feed-spaces a {
     display: flex;
     align-items: center;
@@ -151,6 +168,10 @@
     border-top: 1px solid var(--bs-border-color, #e7e9ee);
 }
 
+.tc-feed-announcements-card h2 {
+    font-size: 0.95rem;
+}
+
 .tc-feed-announcements a {
     display: flex;
     flex-direction: column;
@@ -167,11 +188,24 @@
     display: flex;
     justify-content: space-between;
     gap: 8px;
+    margin-bottom: 2px;
     color: var(--bs-secondary-color, #667085);
-    font-size: 0.75rem;
+    font-size: 0.9rem;
+}
+
+.tc-feed-announcement__spaces a {
+    display: inline;
+    color: inherit;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.tc-feed-announcement__spaces a:hover {
+    text-decoration: underline;
 }
 
 .tc-feed-announcement__title {
+    font-size: 1.05rem;
     font-weight: 600;
     line-height: 1.35;
     display: -webkit-box;
@@ -237,6 +271,30 @@
     font-size: 0.85rem;
 }
 
+.tc-feed-audience__groups {
+    margin: 10px 16px 0;
+    max-height: 18rem;
+    overflow: auto;
+}
+
+.tc-feed-audience__group h3,
+.tc-feed-audience__group h4 {
+    margin: 10px 0 4px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: var(--bs-secondary-color, #667085);
+}
+
+.tc-feed-audience__group h4 {
+    margin-left: 8px;
+    font-weight: 600;
+    text-transform: none;
+    letter-spacing: 0;
+    font-size: 0.8rem;
+}
+
 .tc-feed-audience__list {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
@@ -246,6 +304,16 @@
     padding: 0;
     max-height: 8.5rem;
     overflow: auto;
+}
+
+.tc-feed-audience__groups .tc-feed-audience__list {
+    margin: 0 0 8px;
+    max-height: none;
+    overflow: visible;
+}
+
+.tc-feed-audience__group h4 + .tc-feed-audience__list {
+    margin-left: 8px;
 }
 
 .tc-feed-audience__list label {
