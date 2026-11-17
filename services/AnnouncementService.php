@@ -8,8 +8,9 @@
 namespace humhub\modules\thiscoveryFeed\services;
 
 use humhub\modules\content\models\Content;
-use humhub\modules\content\widgets\richtext\converter\RichTextToPlainTextConverter;
+use humhub\modules\post\models\Post;
 use humhub\modules\space\models\Space;
+use humhub\modules\thiscoveryFeed\models\FeedShare;
 use humhub\modules\user\models\User;
 use Throwable;
 use Yii;
@@ -20,7 +21,7 @@ use Yii;
 final class AnnouncementService
 {
     /**
-     * @return array<int, array{url: string, spaces: array<int, array{name: string, url: string}>, title: string, excerpt: string, time: string}>
+     * @return array<int, array{url: string, spaces: array<int, array{name: string, url: string}>, title: string, message: string, record: Post, time: string}>
      */
     public static function forUser(User $user, int $limit): array
     {
@@ -34,6 +35,7 @@ final class AnnouncementService
             ->where([
                 'content.contentcontainer_id' => $containerIds,
                 'content.pinned' => 1,
+                'content.object_model' => Post::class,
                 'content.state' => Content::STATE_PUBLISHED,
             ])
             ->andWhere(['or', ['content.archived' => 0], ['content.archived' => null]])
@@ -44,7 +46,7 @@ final class AnnouncementService
         $items = [];
         $seenShares = [];
         foreach ($contents as $content) {
-            if (!$content instanceof Content || !$content->canView($user)) {
+            if (!$content instanceof Content || !$content->isPinned() || !$content->canView($user)) {
                 continue;
             }
             $shareId = FeedShareService::shareId((int) $content->id);
@@ -70,70 +72,64 @@ final class AnnouncementService
     }
 
     /**
-     * @return array{url: string, spaces: array<int, array{name: string, url: string}>, title: string, excerpt: string, time: string}|null
+     * @return array{url: string, spaces: array<int, array{name: string, url: string}>, title: string, message: string, record: Post, time: string}|null
      */
     private static function present(Content $content): ?array
     {
         try {
             $model = $content->getModel();
             $container = $content->getContainer();
-            $excerpt = $model ? self::excerpt($model) : '';
         } catch (Throwable $e) {
             Yii::warning($e->getMessage(), 'thiscovery-feed');
             return null;
         }
 
-        if ($model === null || !$container instanceof Space) {
+        if (!$model instanceof Post || !$container instanceof Space) {
             return null;
         }
-        $title = '';
-        if (method_exists($model, 'hasAttribute') && $model->hasAttribute('title') && is_string($model->title) && trim($model->title) !== '') {
-            $title = trim($model->title);
-        }
-        if ($title === '' && $excerpt !== '') {
-            $title = $excerpt;
-            $excerpt = '';
-        }
-        if ($title === '') {
-            $title = $model->getContentName();
-        }
 
+        $title = is_string($model->title) ? trim($model->title) : '';
         $when = $content->created_at ?: $content->updated_at;
-
-        $spaces = [];
-        foreach (FeedShareService::spaces($content) as $space) {
-            $spaces[] = [
-                'name' => $space->name,
-                'url' => $space->getUrl(),
-            ];
-        }
 
         return [
             'url' => $content->getUrl(),
-            'spaces' => $spaces,
+            'spaces' => self::pinnedSpaceLinks($content),
             'title' => $title,
-            'excerpt' => $excerpt,
+            'message' => is_string($model->message) ? $model->message : '',
+            'record' => $model,
             'time' => $when ? Yii::$app->formatter->asRelativeTime($when) : '',
         ];
     }
 
-    private static function excerpt(object $model): string
+    /**
+     * A post sent to several spaces is listed once, under the spaces where that copy is pinned.
+     *
+     * @return array<int, array{name: string, url: string}>
+     */
+    private static function pinnedSpaceLinks(Content $content): array
     {
-        $text = '';
-        if (method_exists($model, 'hasAttribute') && $model->hasAttribute('message') && is_string($model->message) && $model->message !== '') {
-            $text = RichTextToPlainTextConverter::process($model->message);
-        } elseif (method_exists($model, 'getContentDescription')) {
-            $text = (string) $model->getContentDescription();
+        $copies = [$content];
+        $shareId = FeedShareService::shareId((int) $content->id);
+        if ($shareId !== null) {
+            $ids = FeedShare::find()->select('content_id')->where(['share_id' => $shareId])->column();
+            $copies = Content::find()->where(['id' => $ids, 'pinned' => 1])->all();
         }
 
-        $text = strip_tags($text);
-        $text = preg_replace('/\[([^\]]+)\]\([^)]+\)/', '$1', $text) ?? $text;
-        $text = preg_replace('/[#*_`~>]+/u', ' ', $text) ?? $text;
-        $text = trim((string) preg_replace('/\s+/u', ' ', $text));
-        if (mb_strlen($text) > 160) {
-            $text = rtrim(mb_substr($text, 0, 157)) . '…';
+        $spaces = [];
+        foreach ($copies as $copy) {
+            if (!$copy instanceof Content || !$copy->isPinned()) {
+                continue;
+            }
+            $container = $copy->getContainer();
+            if (!$container instanceof Space) {
+                continue;
+            }
+            $spaces[] = [
+                'name' => $container->name,
+                'url' => $container->getUrl(),
+            ];
         }
 
-        return $text;
+        return $spaces;
     }
 }

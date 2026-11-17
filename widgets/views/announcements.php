@@ -1,10 +1,11 @@
 <?php
 
 /**
- * @var array<int, array{url: string, spaces: array<int, array{name: string, url: string}>, title: string, excerpt: string, time: string}> $items
+ * @var array<int, array{url: string, spaces: array<int, array{name: string, url: string}>, title: string, message: string, record: \humhub\modules\post\models\Post, time: string}> $items
  */
 
 use humhub\helpers\Html;
+use humhub\modules\content\widgets\richtext\RichText;
 
 ?>
 
@@ -28,14 +29,15 @@ use humhub\helpers\Html;
                             <time><?= Html::encode($item['time']) ?></time>
                         <?php endif; ?>
                     </span>
-                    <a href="<?= Html::encode($item['url']) ?>">
-                        <?php if ($item['title'] !== ''): ?>
-                            <span class="tc-feed-announcement__title"><?= Html::encode($item['title']) ?></span>
-                        <?php endif; ?>
-                        <?php if ($item['excerpt'] !== ''): ?>
-                            <span class="tc-feed-announcement__excerpt"><?= Html::encode($item['excerpt']) ?></span>
-                        <?php endif; ?>
-                    </a>
+                    <?php if ($item['title'] !== ''): ?>
+                        <span class="tc-feed-announcement__title"><?= Html::encode($item['title']) ?></span>
+                    <?php endif; ?>
+                    <?php if ($item['message'] !== ''): ?>
+                        <div class="tc-feed-announcement__body" data-ui-markdown>
+                            <?= RichText::output($item['message'], ['record' => $item['record']]) ?>
+                        </div>
+                    <?php endif; ?>
+                    <a class="tc-feed-announcement__more" href="<?= Html::encode($item['url']) ?>"><?= Yii::t('ThiscoveryFeedModule.base', '… Read more') ?></a>
                 </li>
             <?php endforeach; ?>
         </ul>

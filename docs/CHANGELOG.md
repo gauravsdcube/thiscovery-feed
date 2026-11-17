@@ -4,6 +4,13 @@ Copyright (c) 2026 D Cube Consulting. All rights reserved.
 
 All notable changes to this module are documented in this file.
 
+## 1.0.3 (November 17, 2026)
+
+- Enh: An announcement links to its post through Read more, and the title and text are no longer a link
+- Fix: Announcement links keep the colour and underline from the active theme
+- Fix: The announcements widget lists only pinned posts, and keeps their original formatting
+- Enh: Each announcement shows the first five lines, then Read more
+
 ## 1.0.2 (November 17, 2026)
 
 - Enh: With Classified Spaces enabled, the space picker and shortcuts list spaces inside their categories, in the sort order set there

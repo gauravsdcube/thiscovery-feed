@@ -1,6 +1,6 @@
 # Thiscovery Feed
 
-**Version 1.0.2**
+**Version 1.0.3**
 
 Copyright (c) 2026 D Cube Consulting. All rights reserved.
 
@@ -11,7 +11,7 @@ A clean home feed for HumHub. Members see new posts from the spaces they belong 
 - **Feed** — posts from spaces the member belongs to, in three columns on a desktop screen
 - **Composer** — post to everyone the member can post in, or to selected spaces. A post sent to several spaces appears once, with those space names on one line
 - **Shortcuts** — profile and the member's spaces
-- **Announcements** — pinned posts from those spaces. Each space name opens that space
+- **Announcements** — pinned posts from those spaces, showing the first five lines in their original formatting. Each space name opens that space, and Read more opens the post
 - **Live updates** — HumHub's live poll shows the same new-posts banner as a space or the Dashboard
 - **Layout** — administrators set the default widgets. Each member can show, hide, reorder, or reset them
 - **Home** — sit beside the Dashboard, or replace it so the logo and login open the feed

@@ -41,5 +41,6 @@ return [
     'Where the feed lives' => '',
     'Your profile and the spaces you belong to.' => '',
     'Your spaces' => '',
+    '… Read more' => '',
     '<strong>Your feed is empty.</strong><br>Join a space to see posts here.' => '',
 ];

@@ -1,4 +1,4 @@
-# Thiscovery Feed 1.0.2
+# Thiscovery Feed 1.0.3
 
 **17 November 2026**
 
@@ -6,10 +6,10 @@ Copyright (c) 2026 D Cube Consulting. All rights reserved.
 
 ## Highlights
 
-- With Classified Spaces enabled, the space picker and shortcuts list spaces inside their categories, in the sort order set there.
-- A post with a file is saved in every selected space.
-- Announcement headings and space names are larger, and each space name opens that space.
-- The feed uses HumHub's live poll and shows the same new-posts banner as a space or the Dashboard.
+- Announcements list only pinned posts.
+- Each announcement keeps the post's original formatting and shows the first five lines.
+- Read more opens the post. The space name opens that space.
+- Those links use the colour and underline from the active theme.
 
 ## Requirements
 
@@ -18,7 +18,7 @@ Copyright (c) 2026 D Cube Consulting. All rights reserved.
 
 ## Upgrade
 
-Replace the module with this release. The new-posts banner appears when someone publishes in a space included on the member's feed.
+Replace the module with this release. Pin a post in a member's space to see it in the announcements widget.
 
 ## License
 
