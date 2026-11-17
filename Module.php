@@ -22,6 +22,7 @@ class Module extends BaseModule
     public const PLACEMENT_REPLACE = 'replace';
 
     public const SETTING_PLACEMENT = 'placement';
+    public const SETTING_SHOW_IN_TOP_MENU = 'showInTopMenu';
     public const SETTING_DEFAULT_LAYOUT = 'defaultLayout';
     public const SETTING_ANNOUNCEMENT_LIMIT = 'announcementLimit';
     public const SETTING_USER_LAYOUT = 'layout';
@@ -85,6 +86,11 @@ class Module extends BaseModule
     public function replacesDashboard(): bool
     {
         return $this->settings->get(self::SETTING_PLACEMENT, self::PLACEMENT_ALONGSIDE) === self::PLACEMENT_REPLACE;
+    }
+
+    public function showInTopMenu(): bool
+    {
+        return (string) $this->settings->get(self::SETTING_SHOW_IN_TOP_MENU, '1') !== '0';
     }
 
     public function announcementLimit(): int

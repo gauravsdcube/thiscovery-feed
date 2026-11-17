@@ -4,6 +4,12 @@ Copyright (c) 2026 D Cube Consulting. All rights reserved.
 
 All notable changes to this module are documented in this file.
 
+## 1.0.1 (November 17, 2026)
+
+- Enh: The space picker uses columns when a member can post in many spaces
+- Fix: The composer opens with no space selected
+- Enh: Administrators can leave Feed off the top bar
+
 ## 1.0.0 (November 17, 2026)
 
 - Enh: Three-column feed of posts from spaces a member belongs to

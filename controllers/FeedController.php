@@ -54,17 +54,15 @@ class FeedController extends Controller
         $user = Yii::$app->user->getIdentity();
         $spaces = PostableSpaceService::forUser($user);
         $audience = $this->savedAudience($module, $user);
-        $checked = $this->savedSpaceGuids($module, $user, $spaces);
-        $primary = PostableSpaceService::find($spaces, $checked[0] ?? '') ?? ($spaces[0] ?? null);
 
         return $this->render('index', [
             'user' => $user,
             'layout' => $module->layoutFor($user),
             'adminLayout' => $module->adminLayout(),
             'spaces' => $spaces,
-            'selected' => $primary,
+            'selected' => $spaces[0] ?? null,
             'audience' => $audience,
-            'checkedGuids' => $checked,
+            'checkedGuids' => [],
         ]);
     }
 
@@ -117,28 +115,6 @@ class FeedController extends Controller
         $audience = (string) $module->settings->user($user)->get(Module::SETTING_COMPOSER_AUDIENCE, AudienceService::SPACES);
 
         return $audience === AudienceService::EVERYONE ? AudienceService::EVERYONE : AudienceService::SPACES;
-    }
-
-    /**
-     * @param Space[] $spaces
-     * @return string[]
-     */
-    private function savedSpaceGuids(Module $module, User $user, array $spaces): array
-    {
-        $allowed = array_map(static fn(Space $space): string => $space->guid, $spaces);
-        $raw = $module->settings->user($user)->get(Module::SETTING_COMPOSER_SPACES, '');
-        $saved = is_string($raw) && $raw !== '' ? json_decode($raw, true) : null;
-        if (!is_array($saved)) {
-            $legacy = (string) $module->settings->user($user)->get(Module::SETTING_COMPOSER_SPACE, '');
-            $saved = $legacy !== '' ? [$legacy] : [];
-        }
-
-        $checked = AudienceService::resolve(AudienceService::SPACES, $allowed, $saved);
-        if ($checked === [] && $allowed !== []) {
-            $checked = [$allowed[0]];
-        }
-
-        return $checked;
     }
 
     public function actionComposer(string $cguid)

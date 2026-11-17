@@ -26,6 +26,10 @@ $visible = array_merge($layout['left'], $layout['right']);
 
         <?php $form = ActiveForm::begin(['acknowledge' => true]) ?>
 
+        <?= $form->field($model, 'showInTopMenu')->checkbox([
+            'label' => Yii::t('ThiscoveryFeedModule.base', 'Show Feed in the top bar'),
+        ])->label(false)->hint(Yii::t('ThiscoveryFeedModule.base', 'Turn this off to leave Feed off the top bar. Members can still open it at /feed. With Thiscovery Navigation, Feed is left out of that menu too.')) ?>
+
         <?= $form->field($model, 'placement')->radioList([
             Module::PLACEMENT_ALONGSIDE => Yii::t('ThiscoveryFeedModule.base', 'Show the feed next to the Dashboard'),
             Module::PLACEMENT_REPLACE => Yii::t('ThiscoveryFeedModule.base', 'Replace the Dashboard. The logo and login land on the feed, and the Dashboard menu is hidden.'),

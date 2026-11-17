@@ -146,20 +146,22 @@ $allowed = array_merge($adminLayout['left'], $adminLayout['right']);
                             <p class="tc-feed-audience__summary" data-audience="everyone"<?= $everyone ? '' : ' hidden' ?>>
                                 <?= Yii::t('ThiscoveryFeedModule.base', 'All {n} spaces you can post in', ['n' => count($spaces)]) ?>
                             </p>
-                            <ul class="tc-feed-audience__list" data-audience="spaces"<?= $everyone ? ' hidden' : '' ?>>
-                                <?php foreach ($spaces as $space): ?>
-                                    <li>
-                                        <label>
-                                            <input type="checkbox" value="<?= Html::encode($space->guid) ?>"<?= in_array($space->guid, $checkedGuids, true) ? ' checked' : '' ?>>
-                                            <span><?= Html::encode($space->name) ?></span>
-                                        </label>
-                                    </li>
-                                <?php endforeach; ?>
-                            </ul>
-                            <p id="tc-feed-audience-error" class="tc-feed-audience__error" hidden></p>
                         <?php endif; ?>
                     </div>
                 </div>
+                <?php if (count($spaces) > 1): ?>
+                    <ul class="tc-feed-audience__list" data-audience="spaces"<?= $everyone ? ' hidden' : '' ?>>
+                        <?php foreach ($spaces as $space): ?>
+                            <li>
+                                <label>
+                                    <input type="checkbox" value="<?= Html::encode($space->guid) ?>"<?= in_array($space->guid, $checkedGuids, true) ? ' checked' : '' ?>>
+                                    <span><?= Html::encode($space->name) ?></span>
+                                </label>
+                            </li>
+                        <?php endforeach; ?>
+                    </ul>
+                    <p id="tc-feed-audience-error" class="tc-feed-audience__error" hidden></p>
+                <?php endif; ?>
                 <div id="tc-feed-composer-slot">
                     <?php
                     $publishUrl = Url::to(['publish']);

@@ -54,14 +54,16 @@ class Events
         /** @var TopMenu $topMenu */
         $topMenu = $event->sender;
 
-        $topMenu->addEntry(new MenuLink([
-            'id' => 'thiscovery-feed',
-            'label' => Yii::t('ThiscoveryFeedModule.base', 'Feed'),
-            'url' => ['/thiscovery-feed/feed/index'],
-            'icon' => 'rss',
-            'sortOrder' => 90,
-            'isActive' => ControllerHelper::isActivePath('thiscovery-feed', 'feed'),
-        ]));
+        if ($module->showInTopMenu()) {
+            $topMenu->addEntry(new MenuLink([
+                'id' => 'thiscovery-feed',
+                'label' => Yii::t('ThiscoveryFeedModule.base', 'Feed'),
+                'url' => ['/thiscovery-feed/feed/index'],
+                'icon' => 'rss',
+                'sortOrder' => 90,
+                'isActive' => ControllerHelper::isActivePath('thiscovery-feed', 'feed'),
+            ]));
+        }
 
         if (!$module->replacesDashboard()) {
             return;

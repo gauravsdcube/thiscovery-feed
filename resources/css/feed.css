@@ -238,10 +238,13 @@
 }
 
 .tc-feed-audience__list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
+    gap: 2px 16px;
     list-style: none;
-    margin: 8px 0 0;
+    margin: 10px 16px 0;
     padding: 0;
-    max-height: 9rem;
+    max-height: 8.5rem;
     overflow: auto;
 }
 
@@ -249,14 +252,21 @@
     display: flex;
     align-items: center;
     gap: 8px;
+    min-width: 0;
     margin: 0;
     padding: 4px 0;
     font-size: 0.9rem;
     cursor: pointer;
 }
 
+.tc-feed-audience__list label span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 .tc-feed-audience__error {
-    margin: 6px 0 0;
+    margin: 6px 16px 0;
     color: var(--bs-danger, #b42318);
     font-size: 0.85rem;
 }

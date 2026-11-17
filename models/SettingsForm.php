@@ -18,6 +18,11 @@ class SettingsForm extends Model
     public $placement = Module::PLACEMENT_ALONGSIDE;
 
     /**
+     * @var bool
+     */
+    public $showInTopMenu = true;
+
+    /**
      * @var int
      */
     public $announcementLimit = 5;
@@ -37,6 +42,7 @@ class SettingsForm extends Model
         return [
             [['placement'], 'required'],
             [['placement'], 'in', 'range' => [Module::PLACEMENT_ALONGSIDE, Module::PLACEMENT_REPLACE]],
+            [['showInTopMenu'], 'boolean'],
             [['announcementLimit'], 'integer', 'min' => 1, 'max' => 10],
             [['widgets', 'order'], 'safe'],
         ];
