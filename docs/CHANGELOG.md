@@ -1,0 +1,16 @@
+# Changelog
+
+Copyright (c) 2026 D Cube Consulting. All rights reserved.
+
+All notable changes to this module are documented in this file.
+
+## 1.0.0 (November 17, 2026)
+
+- Enh: Three-column feed of posts from spaces a member belongs to
+- Enh: Composer posts to every space a member can use, or to the spaces they select
+- Fix: A post to several spaces was saved only in the first space on the list
+- Fix: A post sent to several spaces appears once in the feed, with each space named on it
+- Fix: Space names on a shared post stay on one line
+- Enh: Announcements rail for pinned posts, and a shortcuts rail for profile and spaces
+- Enh: Administrators choose whether the feed sits beside the Dashboard or replaces it, and which widgets are on by default
+- Enh: Members can show, hide, reorder, or reset those widgets

@@ -1,0 +1,331 @@
+.tc-feed {
+    padding-top: 8px;
+    padding-bottom: 32px;
+}
+
+.tc-feed__toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.tc-feed__toolbar h1 {
+    margin: 0;
+    font-size: 1.35rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+}
+
+.tc-feed__grid {
+    display: grid;
+    grid-template-columns: 260px minmax(0, 1fr) 300px;
+    gap: 20px;
+    align-items: start;
+}
+
+.tc-feed__grid.is-no-left {
+    grid-template-columns: minmax(0, 1fr) 300px;
+}
+
+.tc-feed__grid.is-no-right {
+    grid-template-columns: 260px minmax(0, 1fr);
+}
+
+.tc-feed__grid.is-center-only {
+    grid-template-columns: minmax(0, 720px);
+    justify-content: center;
+}
+
+.tc-feed-card,
+.tc-feed-composer {
+    background: var(--bs-body-bg, #fff);
+    border: 1px solid var(--bs-border-color, #e7e9ee);
+    border-radius: 12px;
+    margin-bottom: 16px;
+}
+
+.tc-feed-card {
+    padding: 16px;
+}
+
+.tc-feed-card h2,
+.tc-feed-customize legend {
+    margin: 16px 0 10px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--bs-secondary-color, #667085);
+}
+
+.tc-feed-card h2:first-child,
+.tc-feed-composer__head + h2 {
+    margin-top: 0;
+}
+
+.tc-feed-empty {
+    margin: 0;
+    color: var(--bs-secondary-color, #667085);
+    font-size: 0.92rem;
+}
+
+.tc-feed-person {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: inherit;
+    text-decoration: none;
+}
+
+.tc-feed-person:hover {
+    color: inherit;
+    text-decoration: none;
+}
+
+.tc-feed-person__text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.tc-feed-person__text strong {
+    font-size: 0.95rem;
+    line-height: 1.3;
+}
+
+.tc-feed-person__text small {
+    color: var(--bs-secondary-color, #667085);
+}
+
+.wall-entry-header-info .tc-feed-posted,
+.wall-entry-header-info .tc-feed-posted a {
+    display: inline;
+}
+
+.tc-feed-spaces {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.tc-feed-spaces li + li {
+    margin-top: 8px;
+}
+
+.tc-feed-spaces a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: inherit;
+    text-decoration: none;
+    min-width: 0;
+}
+
+.tc-feed-spaces a span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.tc-feed-spaces a:hover span {
+    text-decoration: underline;
+}
+
+.tc-feed-more {
+    display: inline-block;
+    margin-top: 12px;
+    font-size: 0.875rem;
+}
+
+.tc-feed-announcements {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.tc-feed-announcements li + li {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid var(--bs-border-color, #e7e9ee);
+}
+
+.tc-feed-announcements a {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    color: inherit;
+    text-decoration: none;
+}
+
+.tc-feed-announcements a:hover .tc-feed-announcement__title {
+    text-decoration: underline;
+}
+
+.tc-feed-announcement__meta {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    color: var(--bs-secondary-color, #667085);
+    font-size: 0.75rem;
+}
+
+.tc-feed-announcement__title {
+    font-weight: 600;
+    line-height: 1.35;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.tc-feed-announcement__excerpt {
+    color: var(--bs-secondary-color, #667085);
+    font-size: 0.85rem;
+    line-height: 1.4;
+}
+
+.tc-feed-composer__head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px 0;
+}
+
+.tc-feed-composer__target {
+    flex: 1;
+    min-width: 0;
+}
+
+.tc-feed-audience__label {
+    display: block;
+    margin: 0 0 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--bs-secondary-color, #667085);
+}
+
+.tc-feed-audience__choice {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.tc-feed-audience__choice label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+    padding: 4px 10px;
+    border: 1px solid var(--bs-border-color, #e7e9ee);
+    border-radius: 999px;
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+
+.tc-feed-audience__choice label:has(input:checked) {
+    border-color: var(--bs-primary, #1d6fd8);
+    background: color-mix(in srgb, var(--bs-primary, #1d6fd8) 8%, transparent);
+}
+
+.tc-feed-audience__summary {
+    margin: 8px 0 0;
+    color: var(--bs-secondary-color, #667085);
+    font-size: 0.85rem;
+}
+
+.tc-feed-audience__list {
+    list-style: none;
+    margin: 8px 0 0;
+    padding: 0;
+    max-height: 9rem;
+    overflow: auto;
+}
+
+.tc-feed-audience__list label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    padding: 4px 0;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+.tc-feed-audience__error {
+    margin: 6px 0 0;
+    color: var(--bs-danger, #b42318);
+    font-size: 0.85rem;
+}
+
+.tc-feed-composer .panel {
+    margin: 0;
+    border: 0;
+    box-shadow: none;
+    background: transparent;
+}
+
+.tc-feed-composer--empty {
+    padding: 20px 16px;
+}
+
+.tc-feed-composer--empty p {
+    margin: 0 0 12px;
+}
+
+.tc-feed-customize p {
+    margin-top: 0;
+    color: var(--bs-secondary-color, #667085);
+}
+
+.tc-feed-customize fieldset {
+    border: 0;
+    margin: 0 0 12px;
+    padding: 0;
+}
+
+.tc-feed-customize__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.tc-feed-customize__row label {
+    margin: 0;
+}
+
+.tc-feed-customize__order {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--bs-secondary-color, #667085);
+    font-size: 0.85rem;
+}
+
+.tc-feed-customize__order input {
+    width: 4.5rem;
+}
+
+.tc-feed-customize__actions {
+    display: flex;
+    gap: 8px;
+}
+
+@media (max-width: 1199px) {
+    .tc-feed__grid,
+    .tc-feed__grid.is-no-left,
+    .tc-feed__grid.is-no-right,
+    .tc-feed__grid.is-center-only {
+        grid-template-columns: minmax(0, 1fr);
+        justify-content: stretch;
+    }
+
+    .tc-feed__main {
+        order: -1;
+    }
+}

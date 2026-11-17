@@ -1,0 +1,38 @@
+<?php
+
+/**
+ * @var array<int, array{url: string, space: string, title: string, excerpt: string, time: string}> $items
+ */
+
+use humhub\helpers\Html;
+
+?>
+
+<section class="tc-feed-card">
+    <h2><?= Yii::t('ThiscoveryFeedModule.base', 'Announcements') ?></h2>
+
+    <?php if ($items === []): ?>
+        <p class="tc-feed-empty"><?= Yii::t('ThiscoveryFeedModule.base', 'Nothing is pinned in your spaces yet.') ?></p>
+    <?php else: ?>
+        <ul class="tc-feed-announcements">
+            <?php foreach ($items as $item): ?>
+                <li>
+                    <a href="<?= Html::encode($item['url']) ?>">
+                        <span class="tc-feed-announcement__meta">
+                            <span><?= Html::encode($item['space']) ?></span>
+                            <?php if ($item['time'] !== ''): ?>
+                                <time><?= Html::encode($item['time']) ?></time>
+                            <?php endif; ?>
+                        </span>
+                        <?php if ($item['title'] !== ''): ?>
+                            <span class="tc-feed-announcement__title"><?= Html::encode($item['title']) ?></span>
+                        <?php endif; ?>
+                        <?php if ($item['excerpt'] !== ''): ?>
+                            <span class="tc-feed-announcement__excerpt"><?= Html::encode($item['excerpt']) ?></span>
+                        <?php endif; ?>
+                    </a>
+                </li>
+            <?php endforeach; ?>
+        </ul>
+    <?php endif; ?>
+</section>
