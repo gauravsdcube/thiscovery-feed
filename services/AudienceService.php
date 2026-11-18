@@ -10,8 +10,9 @@ namespace humhub\modules\thiscoveryFeed\services;
 /**
  * Decides which spaces receive a feed post.
  *
- * "Everyone" means every space the member is allowed to post in.
- * "Spaces" means the subset they picked, still limited to that same list.
+ * "Everyone" is not a list of spaces. That choice creates one profile post,
+ * the same way the dashboard composer does. "Spaces" is the subset they
+ * picked, still limited to spaces they can post in.
  */
 final class AudienceService
 {
@@ -34,7 +35,7 @@ final class AudienceService
         }
 
         if ($audience === self::EVERYONE) {
-            return $allowed;
+            return [];
         }
 
         $selected = [];

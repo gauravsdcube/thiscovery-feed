@@ -4,6 +4,15 @@ Copyright (c) 2026 D Cube Consulting. All rights reserved.
 
 All notable changes to this module are documented in this file.
 
+## 1.0.4 (November 18, 2026)
+
+- Fix: Announcement previews stay inside the column when the theme uses large headings
+- Enh: Administrators choose how many lines of each announcement to show before Read more
+- Enh: The composer opens with the editor first and no posting destination selected
+- Enh: Submit stays disabled until Everyone or at least one selected space is chosen
+- Fix: Posting clears the selected audience so the composer is ready for the next post
+- Fix: Everyone creates one profile post, the same as the dashboard, instead of a copy in every space
+
 ## 1.0.3 (November 17, 2026)
 
 - Enh: An announcement links to its post through Read more, and the title and text are no longer a link

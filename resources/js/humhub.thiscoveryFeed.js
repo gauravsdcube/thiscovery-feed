@@ -18,7 +18,7 @@ humhub.module('thiscoveryFeed', function (module, require, $) {
         if (root().find('.tc-feed-locked-guid').length) {
             return 'spaces';
         }
-        return root().find('input[name="tc-feed-audience"]:checked').val() || 'spaces';
+        return root().find('input[name="tc-feed-audience"]:checked').val() || '';
     };
 
     var allGuids = function () {
@@ -35,7 +35,7 @@ humhub.module('thiscoveryFeed', function (module, require, $) {
             return [locked];
         }
         if (mode() === 'everyone') {
-            return allGuids();
+            return [];
         }
         return root().find('.tc-feed-audience__list input:checked').map(function () {
             return this.value;
@@ -54,11 +54,32 @@ humhub.module('thiscoveryFeed', function (module, require, $) {
         }
     };
 
+    var audienceReady = function () {
+        if (root().find('.tc-feed-locked-guid').length) {
+            return true;
+        }
+        if (mode() === 'everyone') {
+            return true;
+        }
+        return mode() === 'spaces' && guids().length > 0;
+    };
+
+    var syncSubmit = function () {
+        var $button = $('#post_submit_button');
+        if (!$button.length || !$button.closest('.tc-feed-composer').length) {
+            return;
+        }
+        var ready = audienceReady();
+        $button.prop('disabled', !ready);
+        $button.attr('aria-disabled', ready ? 'false' : 'true');
+    };
+
     var syncAudience = function () {
-        var everyone = mode() === 'everyone';
-        root().find('[data-audience="everyone"]').prop('hidden', !everyone);
-        root().find('[data-audience="spaces"]').prop('hidden', everyone);
+        var current = mode();
+        root().find('[data-audience="everyone"]').prop('hidden', current !== 'everyone');
+        root().find('[data-audience="spaces"]').prop('hidden', current !== 'spaces');
         showError('');
+        syncSubmit();
     };
 
     var composerForm = function () {
@@ -74,6 +95,16 @@ humhub.module('thiscoveryFeed', function (module, require, $) {
         $button.attr('data-action-click-url', url);
         $button.data('action-click-url', url);
         composerForm().attr('action', url);
+    };
+
+    var clearAudience = function () {
+        if (root().find('.tc-feed-locked-guid').length) {
+            return;
+        }
+        root().find('input[name="tc-feed-audience"]').prop('checked', false);
+        root().find('.tc-feed-audience__list input').prop('checked', false);
+        syncAudience();
+        rememberTargets(composerForm());
     };
 
     var rememberTargets = function ($form) {
@@ -98,6 +129,10 @@ humhub.module('thiscoveryFeed', function (module, require, $) {
         root().find('.tc-feed-audience__list input').off('change.thiscoveryFeed').on('change.thiscoveryFeed', function () {
             showError('');
             rememberTargets(composerForm());
+            syncSubmit();
+        });
+        composerForm().off('reset.thiscoveryFeed').on('reset.thiscoveryFeed', function () {
+            window.setTimeout(clearAudience, 0);
         });
         rememberTargets(composerForm());
 
@@ -106,6 +141,12 @@ humhub.module('thiscoveryFeed', function (module, require, $) {
             document.addEventListener('click', function (clickEvent) {
                 var button = clickEvent.target && clickEvent.target.closest ? clickEvent.target.closest('#post_submit_button') : null;
                 if (!button || !button.closest('.tc-feed-composer')) {
+                    return;
+                }
+                if (!root().find('.tc-feed-locked-guid').length && !mode()) {
+                    clickEvent.preventDefault();
+                    clickEvent.stopImmediatePropagation();
+                    showError(root().attr('data-choose-audience') || '');
                     return;
                 }
                 if (mode() === 'spaces' && !guids().length) {
@@ -127,6 +168,13 @@ humhub.module('thiscoveryFeed', function (module, require, $) {
                 if (feedHasUpdate(stream, events)) {
                     showUpdateBadge(stream);
                 }
+            });
+
+            event.on('humhub:content:afterSubmit.thiscoveryFeed', function (evt, output, formWidget) {
+                if (!formWidget || !formWidget.$ || !formWidget.$.closest('.tc-feed-composer').length) {
+                    return;
+                }
+                clearAudience();
             });
 
             event.on('humhub:content:beforeSubmit.thiscoveryFeed', function (evt, formWidget) {

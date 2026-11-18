@@ -1,11 +1,12 @@
 <?php
 
 return [
-    'A clean home feed of the spaces a member belongs to, with posting to every space they can use or the ones they choose, and a small set of widgets.' => '',
+    'A clean home feed of the spaces a member belongs to, with one profile post like the Dashboard or posts to the spaces they choose, and a small set of widgets.' => '',
     'All spaces' => '',
     'Announcements' => '',
     'All {n} spaces you can post in' => '',
     'Choose at least one space.' => '',
+    'Choose where to post.' => '',
     'Choose whether the feed replaces the Dashboard, and which widgets members see by default.' => '',
     'Everyone' => '',
     'Posting to {space}' => '',
@@ -15,11 +16,13 @@ return [
     'Default widgets' => '',
     'Feed' => '',
     'Find a space' => '',
+    'How many lines of each pinned post to show before Read more.' => '',
     'How many pinned posts to show in the announcements widget.' => '',
     'Join a space to post.' => '',
     'Left column' => '',
     'Manage the feed' => '',
     'Nothing is pinned in your spaces yet.' => '',
+    'One post on your profile, the same as the dashboard.' => '',
     'Other' => '',
     'Order' => '',
     'Pinned posts from your spaces.' => '',

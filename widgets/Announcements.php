@@ -28,6 +28,7 @@ class Announcements extends Widget
 
         return $this->render('announcements', [
             'items' => AnnouncementService::forUser($this->user, $module->announcementLimit()),
+            'lines' => $module->announcementLines(),
         ]);
     }
 }

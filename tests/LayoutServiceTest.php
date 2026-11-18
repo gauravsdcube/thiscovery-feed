@@ -66,10 +66,10 @@ class LayoutServiceTest extends TestCase
         $this->assertSame([WidgetCatalog::ANNOUNCEMENTS], $layout['right']);
     }
 
-    public function testEveryoneUsesEveryAllowedSpace(): void
+    public function testEveryoneIsNotCopiedIntoSpaces(): void
     {
         $this->assertSame(
-            ['a', 'b'],
+            [],
             AudienceService::resolve(AudienceService::EVERYONE, ['a', 'b', 'a'], ['b']),
         );
     }

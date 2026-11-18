@@ -40,6 +40,7 @@ class AdminController extends Controller
             'placement' => $module->replacesDashboard() ? Module::PLACEMENT_REPLACE : Module::PLACEMENT_ALONGSIDE,
             'showInTopMenu' => $module->showInTopMenu(),
             'announcementLimit' => $module->announcementLimit(),
+            'announcementLines' => $module->announcementLines(),
             'widgets' => array_merge($layout['left'], $layout['right']),
         ]);
 
@@ -56,6 +57,7 @@ class AdminController extends Controller
             $module->settings->set(Module::SETTING_PLACEMENT, $model->placement);
             $module->settings->set(Module::SETTING_SHOW_IN_TOP_MENU, $model->showInTopMenu ? '1' : '0');
             $module->settings->set(Module::SETTING_ANNOUNCEMENT_LIMIT, (string) $model->announcementLimit);
+            $module->settings->set(Module::SETTING_ANNOUNCEMENT_LINES, (string) $model->announcementLines);
             $module->settings->set(Module::SETTING_DEFAULT_LAYOUT, json_encode($saved, JSON_THROW_ON_ERROR));
             $this->view->saved();
 

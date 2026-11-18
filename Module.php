@@ -25,6 +25,7 @@ class Module extends BaseModule
     public const SETTING_SHOW_IN_TOP_MENU = 'showInTopMenu';
     public const SETTING_DEFAULT_LAYOUT = 'defaultLayout';
     public const SETTING_ANNOUNCEMENT_LIMIT = 'announcementLimit';
+    public const SETTING_ANNOUNCEMENT_LINES = 'announcementLines';
     public const SETTING_USER_LAYOUT = 'layout';
     public const SETTING_COMPOSER_SPACE = 'composerSpaceGuid';
     public const SETTING_COMPOSER_AUDIENCE = 'composerAudience';
@@ -98,6 +99,13 @@ class Module extends BaseModule
         $limit = (int) $this->settings->get(self::SETTING_ANNOUNCEMENT_LIMIT, 5);
 
         return max(1, min(10, $limit));
+    }
+
+    public function announcementLines(): int
+    {
+        $lines = (int) $this->settings->get(self::SETTING_ANNOUNCEMENT_LINES, 5);
+
+        return max(1, min(20, $lines));
     }
 
     /**

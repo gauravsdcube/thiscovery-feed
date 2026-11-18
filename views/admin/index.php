@@ -38,6 +38,9 @@ $visible = array_merge($layout['left'], $layout['right']);
         <?= $form->field($model, 'announcementLimit')->input('number', ['min' => 1, 'max' => 10, 'class' => 'form-control', 'style' => 'max-width: 6rem'])
             ->hint(Yii::t('ThiscoveryFeedModule.base', 'How many pinned posts to show in the announcements widget.')) ?>
 
+        <?= $form->field($model, 'announcementLines')->input('number', ['min' => 1, 'max' => 20, 'class' => 'form-control', 'style' => 'max-width: 6rem'])
+            ->hint(Yii::t('ThiscoveryFeedModule.base', 'How many lines of each pinned post to show before Read more.')) ?>
+
         <fieldset class="mb-3">
             <legend class="form-label"><?= Yii::t('ThiscoveryFeedModule.base', 'Default widgets') ?></legend>
             <?php foreach ($catalog as $id => $definition): ?>

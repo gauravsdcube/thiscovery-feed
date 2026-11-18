@@ -7,7 +7,6 @@
  * @var \humhub\modules\space\models\Space[] $spaces
  * @var array<int, array{name: string, spaces: \humhub\modules\space\models\Space[], children: array<int, array{name: string, spaces: \humhub\modules\space\models\Space[]}>}>|null $spaceGroups
  * @var \humhub\modules\space\models\Space|null $selected
- * @var string $audience
  * @var string[] $checkedGuids
  * @var string[] $feedSpaceGuids
  */
@@ -20,7 +19,6 @@ use humhub\modules\thiscoveryFeed\assets\FeedAsset;
 use humhub\modules\thiscoveryFeed\services\WidgetCatalog;
 use humhub\modules\thiscoveryFeed\widgets\Announcements;
 use humhub\modules\thiscoveryFeed\widgets\Shortcuts;
-use humhub\modules\user\widgets\Image as UserImage;
 use yii\helpers\Url;
 
 FeedAsset::register($this);
@@ -122,34 +120,59 @@ $allowed = array_merge($adminLayout['left'], $adminLayout['right']);
         <?php else: ?>
             <?php
             $spaceGuids = array_map(static fn($space): string => $space->guid, $spaces);
-            $everyone = $audience === AudienceService::EVERYONE;
             ?>
-            <section class="tc-feed-composer" data-publish-url="<?= Html::encode(Url::to(['publish'])) ?>" data-space-guids="<?= Html::encode(json_encode($spaceGuids, JSON_THROW_ON_ERROR)) ?>" data-choose-space="<?= Html::encode(Yii::t('ThiscoveryFeedModule.base', 'Choose at least one space.')) ?>">
-                <div class="tc-feed-composer__head">
-                    <?= UserImage::widget(['user' => $user, 'width' => 40, 'link' => true]) ?>
-                    <div class="tc-feed-composer__target">
-                        <span class="tc-feed-audience__label" id="tc-feed-audience-label"><?= Yii::t('ThiscoveryFeedModule.base', 'Post to') ?></span>
-                        <?php if (count($spaces) < 2): ?>
-                            <p class="tc-feed-audience__summary">
-                                <?= Yii::t('ThiscoveryFeedModule.base', 'Posting to {space}', ['space' => Html::encode($selected->name)]) ?>
-                            </p>
-                            <input type="hidden" class="tc-feed-locked-guid" value="<?= Html::encode($selected->guid) ?>">
-                        <?php else: ?>
-                            <div class="tc-feed-audience__choice" role="radiogroup" aria-labelledby="tc-feed-audience-label">
-                                <label>
-                                    <input type="radio" name="tc-feed-audience" value="<?= AudienceService::EVERYONE ?>"<?= $everyone ? ' checked' : '' ?>>
-                                    <?= Yii::t('ThiscoveryFeedModule.base', 'Everyone') ?>
-                                </label>
-                                <label>
-                                    <input type="radio" name="tc-feed-audience" value="<?= AudienceService::SPACES ?>"<?= $everyone ? '' : ' checked' ?>>
-                                    <?= Yii::t('ThiscoveryFeedModule.base', 'Selected spaces') ?>
-                                </label>
-                            </div>
-                            <p class="tc-feed-audience__summary" data-audience="everyone"<?= $everyone ? '' : ' hidden' ?>>
-                                <?= Yii::t('ThiscoveryFeedModule.base', 'All {n} spaces you can post in', ['n' => count($spaces)]) ?>
-                            </p>
-                        <?php endif; ?>
-                    </div>
+            <section class="tc-feed-composer" data-publish-url="<?= Html::encode(Url::to(['publish'])) ?>" data-space-guids="<?= Html::encode(json_encode($spaceGuids, JSON_THROW_ON_ERROR)) ?>" data-choose-audience="<?= Html::encode(Yii::t('ThiscoveryFeedModule.base', 'Choose where to post.')) ?>" data-choose-space="<?= Html::encode(Yii::t('ThiscoveryFeedModule.base', 'Choose at least one space.')) ?>">
+                <div id="tc-feed-composer-slot">
+                    <?php
+                    $publishUrl = Url::to(['publish']);
+                    $formHtml = Form::widget(['contentContainer' => $selected]);
+                    $formHtml = preg_replace(
+                        '/(<form\b[^>]*\saction=")[^"]*(")/',
+                        '$1' . Html::encode($publishUrl) . '$2',
+                        $formHtml,
+                        1,
+                    );
+                    $formHtml = preg_replace(
+                        '/data-action-click-url="[^"]*"/',
+                        'data-action-click-url="' . Html::encode($publishUrl) . '"',
+                        $formHtml,
+                        1,
+                    );
+                    $audienceFields = Html::hiddenInput('feedAudience', '');
+                    $formHtml = preg_replace('/<\/form>/', $audienceFields . '</form>', $formHtml, 1);
+                    if (count($spaces) > 1) {
+                        $formHtml = preg_replace(
+                            '/id="post_submit_button"/',
+                            'id="post_submit_button" disabled',
+                            $formHtml,
+                            1,
+                        );
+                    }
+                    echo $formHtml;
+                    ?>
+                </div>
+                <div class="tc-feed-composer__audience">
+                    <span class="tc-feed-audience__label" id="tc-feed-audience-label"><?= Yii::t('ThiscoveryFeedModule.base', 'Post to') ?></span>
+                    <?php if (count($spaces) < 2): ?>
+                        <p class="tc-feed-audience__summary">
+                            <?= Yii::t('ThiscoveryFeedModule.base', 'Posting to {space}', ['space' => Html::encode($selected->name)]) ?>
+                        </p>
+                        <input type="hidden" class="tc-feed-locked-guid" value="<?= Html::encode($selected->guid) ?>">
+                    <?php else: ?>
+                        <div class="tc-feed-audience__choice" role="radiogroup" aria-labelledby="tc-feed-audience-label">
+                            <label>
+                                <input type="radio" name="tc-feed-audience" value="<?= AudienceService::EVERYONE ?>">
+                                <?= Yii::t('ThiscoveryFeedModule.base', 'Everyone') ?>
+                            </label>
+                            <label>
+                                <input type="radio" name="tc-feed-audience" value="<?= AudienceService::SPACES ?>">
+                                <?= Yii::t('ThiscoveryFeedModule.base', 'Selected spaces') ?>
+                            </label>
+                        </div>
+                        <p class="tc-feed-audience__summary" data-audience="everyone" hidden>
+                            <?= Yii::t('ThiscoveryFeedModule.base', 'One post on your profile, the same as the dashboard.') ?>
+                        </p>
+                    <?php endif; ?>
                 </div>
                 <?php if (count($spaces) > 1): ?>
                     <?php
@@ -160,13 +183,13 @@ $allowed = array_merge($adminLayout['left'], $adminLayout['right']);
                     };
                     ?>
                     <?php if ($spaceGroups === null): ?>
-                        <ul class="tc-feed-audience__list" data-audience="spaces"<?= $everyone ? ' hidden' : '' ?>>
+                        <ul class="tc-feed-audience__list" data-audience="spaces" hidden>
                             <?php foreach ($spaces as $space) {
                                 echo $spaceChoice($space);
                             } ?>
                         </ul>
                     <?php else: ?>
-                        <div class="tc-feed-audience__groups" data-audience="spaces"<?= $everyone ? ' hidden' : '' ?>>
+                        <div class="tc-feed-audience__groups" data-audience="spaces" hidden>
                             <?php foreach ($spaceGroups as $group): ?>
                                 <section class="tc-feed-audience__group">
                                     <h3><?= Html::encode($group['name']) ?></h3>
@@ -191,30 +214,6 @@ $allowed = array_merge($adminLayout['left'], $adminLayout['right']);
                     <?php endif; ?>
                     <p id="tc-feed-audience-error" class="tc-feed-audience__error" hidden></p>
                 <?php endif; ?>
-                <div id="tc-feed-composer-slot">
-                    <?php
-                    $publishUrl = Url::to(['publish']);
-                    $formHtml = Form::widget(['contentContainer' => $selected]);
-                    $formHtml = preg_replace(
-                        '/(<form\b[^>]*\saction=")[^"]*(")/',
-                        '$1' . Html::encode($publishUrl) . '$2',
-                        $formHtml,
-                        1,
-                    );
-                    $formHtml = preg_replace(
-                        '/data-action-click-url="[^"]*"/',
-                        'data-action-click-url="' . Html::encode($publishUrl) . '"',
-                        $formHtml,
-                        1,
-                    );
-                    $audienceFields = Html::hiddenInput('feedAudience', $everyone ? AudienceService::EVERYONE : AudienceService::SPACES);
-                    foreach (($everyone ? $spaceGuids : $checkedGuids) as $guid) {
-                        $audienceFields .= Html::hiddenInput('feedSpaces[]', $guid);
-                    }
-                    $formHtml = preg_replace('/<\/form>/', $audienceFields . '</form>', $formHtml, 1);
-                    echo $formHtml;
-                    ?>
-                </div>
             </section>
         <?php endif; ?>
 

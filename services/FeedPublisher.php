@@ -8,6 +8,7 @@
 namespace humhub\modules\thiscoveryFeed\services;
 
 use humhub\libs\UUID;
+use humhub\modules\content\components\ContentContainerActiveRecord;
 use humhub\modules\content\models\Content;
 use humhub\modules\content\widgets\stream\WallStreamEntryOptions;
 use humhub\modules\content\widgets\WallCreateContentForm;
@@ -15,6 +16,7 @@ use humhub\modules\file\models\File;
 use humhub\modules\post\models\Post;
 use humhub\modules\space\models\Space;
 use humhub\modules\stream\actions\StreamEntryResponse;
+use humhub\modules\user\models\User;
 use humhub\modules\topic\models\Topic;
 use Throwable;
 use Yii;
@@ -97,24 +99,46 @@ final class FeedPublisher
     }
 
     /**
+     * One profile post, which is what the dashboard composer creates.
+     *
+     * @return array<string, mixed>
+     */
+    public function publishToProfile(User $user): array
+    {
+        $this->originalTopics = $this->requestTopics();
+
+        $probe = new Post($user);
+        $probe->load(Yii::$app->request->post(), 'Post');
+        $guids = $this->fileGuids();
+        if ($guids !== []) {
+            $probe->scenario = Post::SCENARIO_HAS_FILES;
+        }
+        if (!$probe->validate()) {
+            return ['errors' => $probe->getErrors()];
+        }
+
+        return $this->publishOne($user, $guids);
+    }
+
+    /**
      * @param string[] $guids
      * @return array<string, mixed>
      */
-    private function publishOne(Space $space, array $guids): array
+    private function publishOne(ContentContainerActiveRecord $container, array $guids): array
     {
         $body = Yii::$app->request->getBodyParams();
         $body['fileList'] = $guids;
-        $body['postTopicInput'] = $this->topicsFor($space);
+        $body['postTopicInput'] = $this->topicsFor($container);
         Yii::$app->request->setBodyParams($body);
 
-        $post = new Post($space);
+        $post = new Post($container);
         $post->load(Yii::$app->request->post(), 'Post');
         if ($guids !== []) {
             $post->scenario = Post::SCENARIO_HAS_FILES;
         }
 
         try {
-            $result = WallCreateContentForm::create($post, $space);
+            $result = WallCreateContentForm::create($post, $container);
         } catch (Throwable $e) {
             Yii::error($e, 'thiscovery-feed');
             if ($post->content && $post->content->id) {
@@ -272,7 +296,7 @@ final class FeedPublisher
      *
      * @return string[]
      */
-    private function topicsFor(Space $space): array
+    private function topicsFor(ContentContainerActiveRecord $container): array
     {
         if (!Yii::$app->hasModule('topic')) {
             return [];
@@ -288,7 +312,7 @@ final class FeedPublisher
                 continue;
             }
             $model = Topic::findOne((int) $topic);
-            if ($model && (int) $model->contentcontainer_id === (int) $space->contentcontainer_id) {
+            if ($model && (int) $model->contentcontainer_id === (int) $container->contentcontainer_id) {
                 $kept[] = (string) $topic;
             }
         }

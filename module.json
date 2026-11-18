@@ -1,9 +1,9 @@
 {
   "id": "thiscovery-feed",
   "name": "Thiscovery Feed",
-  "description": "A clean home feed of the spaces a member belongs to, with posting to every space they can use or the ones they choose, and a small set of widgets.",
+  "description": "A clean home feed of the spaces a member belongs to, with one profile post like the Dashboard or posts to the spaces they choose, and a small set of widgets.",
   "keywords": ["thiscovery", "feed", "dashboard", "stream"],
-  "version": "1.0.3",
+  "version": "1.0.4",
   "humhub": {
     "minVersion": "1.18"
   },

@@ -28,6 +28,11 @@ class SettingsForm extends Model
     public $announcementLimit = 5;
 
     /**
+     * @var int
+     */
+    public $announcementLines = 5;
+
+    /**
      * @var string[]
      */
     public $widgets = [];
@@ -44,6 +49,7 @@ class SettingsForm extends Model
             [['placement'], 'in', 'range' => [Module::PLACEMENT_ALONGSIDE, Module::PLACEMENT_REPLACE]],
             [['showInTopMenu'], 'boolean'],
             [['announcementLimit'], 'integer', 'min' => 1, 'max' => 10],
+            [['announcementLines'], 'integer', 'min' => 1, 'max' => 20],
             [['widgets', 'order'], 'safe'],
         ];
     }

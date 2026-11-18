@@ -16,6 +16,7 @@ use humhub\modules\thiscoveryFeed\services\AudienceService;
 use humhub\modules\thiscoveryFeed\services\FeedPublisher;
 use humhub\modules\thiscoveryFeed\services\LayoutService;
 use humhub\modules\thiscoveryFeed\services\MemberSpaceService;
+use humhub\modules\thiscoveryFeed\services\ProfileStreamService;
 use humhub\modules\thiscoveryFeed\services\PostableSpaceService;
 use humhub\modules\thiscoveryFeed\services\SpaceCategoryService;
 use humhub\modules\user\models\User;
@@ -55,7 +56,6 @@ class FeedController extends Controller
         /** @var User $user */
         $user = Yii::$app->user->getIdentity();
         $spaces = PostableSpaceService::forUser($user);
-        $audience = $this->savedAudience($module, $user);
 
         return $this->render('index', [
             'user' => $user,
@@ -64,9 +64,11 @@ class FeedController extends Controller
             'spaces' => $spaces,
             'spaceGroups' => SpaceCategoryService::tree($spaces),
             'selected' => $spaces[0] ?? null,
-            'audience' => $audience,
             'checkedGuids' => [],
-            'feedSpaceGuids' => MemberSpaceService::guids($user),
+            'feedSpaceGuids' => array_values(array_unique(array_merge(
+                MemberSpaceService::guids($user),
+                ProfileStreamService::guids($user),
+            ))),
         ]);
     }
 
@@ -80,10 +82,14 @@ class FeedController extends Controller
         /** @var User $user */
         $user = Yii::$app->user->getIdentity();
         $allowed = PostableSpaceService::forUser($user);
-        $audience = (string) Yii::$app->request->post('feedAudience', AudienceService::SPACES);
+        $audience = (string) Yii::$app->request->post('feedAudience', '');
         if (!in_array($audience, [AudienceService::EVERYONE, AudienceService::SPACES], true)) {
-            $audience = AudienceService::SPACES;
+            return ['errors' => ['message' => [Yii::t('ThiscoveryFeedModule.base', 'Choose where to post.')]]];
         }
+        if ($audience === AudienceService::EVERYONE) {
+            return (new FeedPublisher())->publishToProfile($user);
+        }
+
         $selected = Yii::$app->request->post('feedSpaces', []);
         if (!is_array($selected)) {
             $selected = [];
@@ -107,18 +113,10 @@ class FeedController extends Controller
         }
 
         $settings = $module->settings->user($user);
-        $settings->set(Module::SETTING_COMPOSER_AUDIENCE, $audience);
-        $settings->set(Module::SETTING_COMPOSER_SPACES, json_encode($audience === AudienceService::EVERYONE ? array_map(static fn(Space $space): string => $space->guid, $allowed) : $guids, JSON_THROW_ON_ERROR));
+        $settings->set(Module::SETTING_COMPOSER_SPACES, json_encode($guids, JSON_THROW_ON_ERROR));
         $settings->set(Module::SETTING_COMPOSER_SPACE, $spaces[0]->guid);
 
         return (new FeedPublisher())->publish($spaces);
-    }
-
-    private function savedAudience(Module $module, User $user): string
-    {
-        $audience = (string) $module->settings->user($user)->get(Module::SETTING_COMPOSER_AUDIENCE, AudienceService::SPACES);
-
-        return $audience === AudienceService::EVERYONE ? AudienceService::EVERYONE : AudienceService::SPACES;
     }
 
     public function actionComposer(string $cguid)
