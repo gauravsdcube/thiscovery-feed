@@ -16,6 +16,7 @@ use humhub\modules\thiscoveryFeed\services\AudienceService;
 use humhub\modules\post\widgets\Form;
 use humhub\modules\stream\widgets\StreamViewer;
 use humhub\modules\thiscoveryFeed\assets\FeedAsset;
+use humhub\modules\thiscoveryFeed\services\BannerService;
 use humhub\modules\thiscoveryFeed\services\WidgetCatalog;
 use humhub\modules\thiscoveryFeed\widgets\Announcements;
 use humhub\modules\thiscoveryFeed\widgets\Shortcuts;
@@ -46,6 +47,13 @@ $allowed = array_merge($adminLayout['left'], $adminLayout['right']);
 
 <?= Html::beginContainer() ?>
 <div class="tc-feed">
+
+<?php
+$bannerUrl = Yii::$app->getModule('thiscovery-feed')->showBanner() ? BannerService::url() : null;
+?>
+<?php if ($bannerUrl !== null): ?>
+    <img class="tc-feed-banner" src="<?= Html::encode($bannerUrl) ?>" alt="<?= Html::encode(Yii::t('ThiscoveryFeedModule.base', 'Feed banner')) ?>">
+<?php endif; ?>
 
 <div class="tc-feed__toolbar">
     <h1><?= Yii::t('ThiscoveryFeedModule.base', 'Feed') ?></h1>

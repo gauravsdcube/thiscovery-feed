@@ -8,12 +8,15 @@
 
 use humhub\helpers\Html;
 use humhub\modules\thiscoveryFeed\Module;
+use humhub\modules\thiscoveryFeed\services\BannerService;
 use humhub\widgets\form\ActiveForm;
 use humhub\widgets\bootstrap\Button;
 
 /** @var Module $module */
 $module = Yii::$app->getModule('thiscovery-feed');
 $visible = array_merge($layout['left'], $layout['right']);
+
+$this->registerCss('.tc-feed-banner-preview-wrap{max-width:100%;overflow:hidden}.tc-feed-banner-preview{display:block;width:100%;max-width:100%;height:auto;border-radius:12px}');
 ?>
 
 <div class="panel panel-default">
@@ -24,7 +27,7 @@ $visible = array_merge($layout['left'], $layout['right']);
         <p><?= Yii::t('ThiscoveryFeedModule.base', 'The feed shows new posts from spaces a member belongs to, as long as that membership is still included on the dashboard. Members can hide or reorder the widgets you turn on here.') ?></p>
         <p><?= Yii::t('ThiscoveryFeedModule.base', 'The top bar is managed in Thiscovery Navigation. While the feed sits beside the Dashboard, Feed is available to place in that menu. When the feed replaces the Dashboard, the existing Dashboard item opens the feed instead.') ?></p>
 
-        <?php $form = ActiveForm::begin(['acknowledge' => true]) ?>
+        <?php $form = ActiveForm::begin(['acknowledge' => true, 'options' => ['enctype' => 'multipart/form-data']]) ?>
 
         <?= $form->field($model, 'showInTopMenu')->checkbox([
             'label' => Yii::t('ThiscoveryFeedModule.base', 'Show Feed in the top bar'),
@@ -40,6 +43,23 @@ $visible = array_merge($layout['left'], $layout['right']);
 
         <?= $form->field($model, 'announcementLines')->input('number', ['min' => 1, 'max' => 20, 'class' => 'form-control', 'style' => 'max-width: 6rem'])
             ->hint(Yii::t('ThiscoveryFeedModule.base', 'How many lines of each pinned post to show before Read more.')) ?>
+
+        <?= $form->field($model, 'showBanner')->checkbox([
+            'label' => Yii::t('ThiscoveryFeedModule.base', 'Show a banner on the feed'),
+        ])->label(false)->hint(Yii::t('ThiscoveryFeedModule.base', 'Shown across the top of the feed when an image is uploaded.')) ?>
+
+        <?php $bannerUrl = BannerService::url(); ?>
+        <?php if ($bannerUrl !== null): ?>
+            <div class="tc-feed-banner-preview-wrap mb-3">
+                <img class="tc-feed-banner-preview" src="<?= Html::encode($bannerUrl) ?>" alt="<?= Html::encode(Yii::t('ThiscoveryFeedModule.base', 'Feed banner')) ?>">
+            </div>
+            <?= $form->field($model, 'removeBanner')->checkbox([
+                'label' => Yii::t('ThiscoveryFeedModule.base', 'Remove the current banner'),
+            ])->label(false) ?>
+        <?php endif; ?>
+
+        <?= $form->field($model, 'bannerFile')->fileInput(['accept' => 'image/png,image/jpeg,image/gif,image/webp'])
+            ->hint(Yii::t('ThiscoveryFeedModule.base', 'PNG, JPG, GIF or WebP. Up to 8 MB.')) ?>
 
         <fieldset class="mb-3">
             <legend class="form-label"><?= Yii::t('ThiscoveryFeedModule.base', 'Default widgets') ?></legend>

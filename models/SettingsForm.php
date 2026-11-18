@@ -9,6 +9,7 @@ namespace humhub\modules\thiscoveryFeed\models;
 
 use humhub\modules\thiscoveryFeed\Module;
 use yii\base\Model;
+use yii\web\UploadedFile;
 
 class SettingsForm extends Model
 {
@@ -33,6 +34,21 @@ class SettingsForm extends Model
     public $announcementLines = 5;
 
     /**
+     * @var bool
+     */
+    public $showBanner = false;
+
+    /**
+     * @var UploadedFile|null
+     */
+    public $bannerFile;
+
+    /**
+     * @var bool
+     */
+    public $removeBanner = false;
+
+    /**
      * @var string[]
      */
     public $widgets = [];
@@ -50,6 +66,8 @@ class SettingsForm extends Model
             [['showInTopMenu'], 'boolean'],
             [['announcementLimit'], 'integer', 'min' => 1, 'max' => 10],
             [['announcementLines'], 'integer', 'min' => 1, 'max' => 20],
+            [['showBanner', 'removeBanner'], 'boolean'],
+            [['bannerFile'], 'file', 'skipOnEmpty' => true, 'extensions' => ['png', 'jpg', 'jpeg', 'gif', 'webp'], 'maxSize' => 8 * 1024 * 1024, 'checkExtensionByMimeType' => true],
             [['widgets', 'order'], 'safe'],
         ];
     }

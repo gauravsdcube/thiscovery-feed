@@ -12,9 +12,11 @@ use humhub\modules\admin\permissions\ManageModules;
 use humhub\modules\thiscoveryFeed\models\SettingsForm;
 use humhub\modules\thiscoveryFeed\Module;
 use humhub\modules\thiscoveryFeed\permissions\ManageFeed;
+use humhub\modules\thiscoveryFeed\services\BannerService;
 use humhub\modules\thiscoveryFeed\services\LayoutService;
 use humhub\modules\thiscoveryFeed\services\WidgetCatalog;
 use Yii;
+use yii\web\UploadedFile;
 
 class AdminController extends Controller
 {
@@ -41,6 +43,7 @@ class AdminController extends Controller
             'showInTopMenu' => $module->showInTopMenu(),
             'announcementLimit' => $module->announcementLimit(),
             'announcementLines' => $module->announcementLines(),
+            'showBanner' => $module->showBanner(),
             'widgets' => array_merge($layout['left'], $layout['right']),
         ]);
 
@@ -49,7 +52,9 @@ class AdminController extends Controller
             $model->order = [];
         }
 
-        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
+        $loaded = $model->load(Yii::$app->request->post());
+        $model->bannerFile = UploadedFile::getInstance($model, 'bannerFile');
+        if ($loaded && $model->validate()) {
             $widgets = is_array($model->widgets) ? $model->widgets : [];
             $order = is_array($model->order) ? $model->order : [];
             $selected = array_values(array_filter($widgets, 'is_string'));
@@ -58,7 +63,23 @@ class AdminController extends Controller
             $module->settings->set(Module::SETTING_SHOW_IN_TOP_MENU, $model->showInTopMenu ? '1' : '0');
             $module->settings->set(Module::SETTING_ANNOUNCEMENT_LIMIT, (string) $model->announcementLimit);
             $module->settings->set(Module::SETTING_ANNOUNCEMENT_LINES, (string) $model->announcementLines);
+            $module->settings->set(Module::SETTING_SHOW_BANNER, $model->showBanner ? '1' : '0');
             $module->settings->set(Module::SETTING_DEFAULT_LAYOUT, json_encode($saved, JSON_THROW_ON_ERROR));
+            if ($model->bannerFile instanceof UploadedFile) {
+                if (!BannerService::store($model->bannerFile)) {
+                    $model->addError('bannerFile', Yii::t('ThiscoveryFeedModule.base', 'The banner could not be saved.'));
+                }
+            } elseif ($model->removeBanner) {
+                BannerService::delete();
+            }
+            if ($model->hasErrors()) {
+                return $this->render('index', [
+                    'model' => $model,
+                    'layout' => $layout,
+                    'catalog' => WidgetCatalog::definitions(),
+                ]);
+            }
+
             $this->view->saved();
 
             return $this->refresh();

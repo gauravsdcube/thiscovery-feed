@@ -3,6 +3,30 @@
     padding-bottom: 32px;
 }
 
+.tc-feed-banner,
+.tc-feed-banner-preview {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    border-radius: 12px;
+}
+
+.tc-feed-banner-preview-wrap {
+    max-width: 100%;
+    overflow: hidden;
+}
+
+.tc-feed-banner {
+    margin: 0 0 16px;
+}
+
+.tc-feed-banner-preview {
+    max-height: 180px;
+    object-fit: contain;
+    background: var(--bs-tertiary-bg, #f4f5f7);
+}
+
 .tc-feed__toolbar {
     display: flex;
     align-items: center;

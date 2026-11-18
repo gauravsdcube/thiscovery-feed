@@ -26,6 +26,8 @@ class Module extends BaseModule
     public const SETTING_DEFAULT_LAYOUT = 'defaultLayout';
     public const SETTING_ANNOUNCEMENT_LIMIT = 'announcementLimit';
     public const SETTING_ANNOUNCEMENT_LINES = 'announcementLines';
+    public const SETTING_SHOW_BANNER = 'showBanner';
+    public const SETTING_BANNER_FILE = 'bannerFileGuid';
     public const SETTING_USER_LAYOUT = 'layout';
     public const SETTING_COMPOSER_SPACE = 'composerSpaceGuid';
     public const SETTING_COMPOSER_AUDIENCE = 'composerAudience';
@@ -50,7 +52,7 @@ class Module extends BaseModule
     {
         return Yii::t(
             'ThiscoveryFeedModule.base',
-            'A clean home feed of the spaces a member belongs to, with posting to every space they can use or the ones they choose, and a small set of widgets.'
+            'A clean home feed of the spaces a member belongs to, with one profile post like the Dashboard or posts to the spaces they choose, and a small set of widgets.'
         );
     }
 
@@ -106,6 +108,11 @@ class Module extends BaseModule
         $lines = (int) $this->settings->get(self::SETTING_ANNOUNCEMENT_LINES, 5);
 
         return max(1, min(20, $lines));
+    }
+
+    public function showBanner(): bool
+    {
+        return (string) $this->settings->get(self::SETTING_SHOW_BANNER, '0') === '1';
     }
 
     /**

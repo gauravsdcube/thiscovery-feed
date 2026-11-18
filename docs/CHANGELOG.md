@@ -4,6 +4,11 @@ Copyright (c) 2026 D Cube Consulting. All rights reserved.
 
 All notable changes to this module are documented in this file.
 
+## 1.0.5 (November 18, 2026)
+
+- Enh: Administrators can upload a banner and choose whether it is shown across the top of the feed
+- Fix: The banner preview stays inside the feed configuration panel
+
 ## 1.0.4 (November 18, 2026)
 
 - Fix: Announcement previews stay inside the column when the theme uses large headings
