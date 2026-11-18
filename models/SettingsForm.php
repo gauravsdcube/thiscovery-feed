@@ -58,6 +58,11 @@ class SettingsForm extends Model
      */
     public $order = [];
 
+    /**
+     * @var array<string, mixed>
+     */
+    public $columns = [];
+
     public function rules()
     {
         return [
@@ -68,7 +73,7 @@ class SettingsForm extends Model
             [['announcementLines'], 'integer', 'min' => 1, 'max' => 20],
             [['showBanner', 'removeBanner'], 'boolean'],
             [['bannerFile'], 'file', 'skipOnEmpty' => true, 'extensions' => ['png', 'jpg', 'jpeg', 'gif', 'webp'], 'maxSize' => 8 * 1024 * 1024, 'checkExtensionByMimeType' => true],
-            [['widgets', 'order'], 'safe'],
+            [['widgets', 'order', 'columns'], 'safe'],
         ];
     }
 }

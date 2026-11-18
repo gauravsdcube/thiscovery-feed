@@ -41,12 +41,13 @@ final class LayoutService
             }
 
             foreach ($ids as $id) {
-                if (!is_string($id) || !WidgetCatalog::exists($id) || WidgetCatalog::column($id) !== $column) {
+                if (!is_string($id) || !WidgetCatalog::exists($id)) {
                     continue;
                 }
-                if (!in_array($id, $result[$column], true)) {
-                    $result[$column][] = $id;
+                if (in_array($id, $result['left'], true) || in_array($id, $result['right'], true)) {
+                    continue;
                 }
+                $result[$column][] = $id;
             }
         }
 
@@ -79,18 +80,23 @@ final class LayoutService
     /**
      * @param string[] $selectedIds
      * @param array<string, mixed> $order sort numbers keyed by widget id
+     * @param array<string, mixed> $columns left or right, keyed by widget id
      * @return array{left: string[], right: string[]}
      */
-    public static function fromSelection(array $selectedIds, array $order): array
+    public static function fromSelection(array $selectedIds, array $order, array $columns = []): array
     {
         $items = [];
         foreach ($selectedIds as $id) {
             if (!is_string($id) || !WidgetCatalog::exists($id)) {
                 continue;
             }
+            $column = $columns[$id] ?? WidgetCatalog::column($id);
+            if (!in_array($column, ['left', 'right'], true)) {
+                $column = WidgetCatalog::column($id);
+            }
             $items[] = [
                 'id' => $id,
-                'column' => WidgetCatalog::column($id),
+                'column' => $column,
                 'sort' => isset($order[$id]) && is_numeric($order[$id]) ? (int) $order[$id] : 100,
             ];
         }
@@ -105,5 +111,23 @@ final class LayoutService
         }
 
         return self::normalize($columns);
+    }
+
+    /**
+     * @param array{left?: string[], right?: string[]} $layout
+     * @return array<string, string>
+     */
+    public static function columnMap(array $layout): array
+    {
+        $map = [];
+        foreach (['left', 'right'] as $column) {
+            foreach ($layout[$column] ?? [] as $id) {
+                if (is_string($id) && !isset($map[$id])) {
+                    $map[$id] = $column;
+                }
+            }
+        }
+
+        return $map;
     }
 }

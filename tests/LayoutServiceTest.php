@@ -23,15 +23,27 @@ class LayoutServiceTest extends TestCase
         $this->assertSame([WidgetCatalog::ANNOUNCEMENTS], $layout['right']);
     }
 
-    public function testNormalizeDropsUnknownWidgetsAndWrongColumns(): void
+    public function testNormalizeDropsUnknownWidgetsAndKeepsAWidgetOnEitherSide(): void
     {
         $layout = LayoutService::normalize([
             'left' => [WidgetCatalog::SHORTCUTS, WidgetCatalog::ANNOUNCEMENTS, 'nope', WidgetCatalog::SHORTCUTS],
-            'right' => ['nope'],
+            'right' => ['nope', WidgetCatalog::ANNOUNCEMENTS],
         ]);
 
-        $this->assertSame([WidgetCatalog::SHORTCUTS], $layout['left']);
+        $this->assertSame([WidgetCatalog::SHORTCUTS, WidgetCatalog::ANNOUNCEMENTS], $layout['left']);
         $this->assertSame([], $layout['right']);
+    }
+
+    public function testSelectionCanPlaceAWidgetOnEitherSide(): void
+    {
+        $layout = LayoutService::fromSelection(
+            [WidgetCatalog::EVENTS, WidgetCatalog::FORMS],
+            [WidgetCatalog::FORMS => 1, WidgetCatalog::EVENTS => 2],
+            [WidgetCatalog::EVENTS => 'left', WidgetCatalog::FORMS => 'right'],
+        );
+
+        $this->assertSame([WidgetCatalog::EVENTS], $layout['left']);
+        $this->assertSame([WidgetCatalog::FORMS], $layout['right']);
     }
 
     public function testMemberLayoutIsLimitedToTheAdminCatalogue(): void

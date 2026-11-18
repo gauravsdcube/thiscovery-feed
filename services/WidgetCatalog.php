@@ -16,6 +16,8 @@ final class WidgetCatalog
 {
     public const SHORTCUTS = 'shortcuts';
     public const ANNOUNCEMENTS = 'announcements';
+    public const EVENTS = 'events';
+    public const FORMS = 'forms';
 
     /**
      * @return array<string, array{column: string}>
@@ -25,6 +27,8 @@ final class WidgetCatalog
         return [
             self::SHORTCUTS => ['column' => 'left'],
             self::ANNOUNCEMENTS => ['column' => 'right'],
+            self::EVENTS => ['column' => 'right'],
+            self::FORMS => ['column' => 'right'],
         ];
     }
 

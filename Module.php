@@ -144,6 +144,8 @@ class Module extends BaseModule
         return match ($id) {
             WidgetCatalog::SHORTCUTS => Yii::t('ThiscoveryFeedModule.base', 'Shortcuts'),
             WidgetCatalog::ANNOUNCEMENTS => Yii::t('ThiscoveryFeedModule.base', 'Announcements'),
+            WidgetCatalog::EVENTS => Yii::t('ThiscoveryFeedModule.base', 'Upcoming events'),
+            WidgetCatalog::FORMS => Yii::t('ThiscoveryFeedModule.base', 'Forms'),
             default => $id,
         };
     }
@@ -153,6 +155,8 @@ class Module extends BaseModule
         return match ($id) {
             WidgetCatalog::SHORTCUTS => Yii::t('ThiscoveryFeedModule.base', 'Your profile and the spaces you belong to.'),
             WidgetCatalog::ANNOUNCEMENTS => Yii::t('ThiscoveryFeedModule.base', 'Pinned posts from your spaces.'),
+            WidgetCatalog::EVENTS => Yii::t('ThiscoveryFeedModule.base', 'The next events in the spaces you belong to.'),
+            WidgetCatalog::FORMS => Yii::t('ThiscoveryFeedModule.base', 'Open forms and surveys you can still complete.'),
             default => '',
         };
     }

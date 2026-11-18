@@ -19,7 +19,9 @@ use humhub\modules\thiscoveryFeed\assets\FeedAsset;
 use humhub\modules\thiscoveryFeed\services\BannerService;
 use humhub\modules\thiscoveryFeed\services\WidgetCatalog;
 use humhub\modules\thiscoveryFeed\widgets\Announcements;
+use humhub\modules\thiscoveryFeed\widgets\OpenForms;
 use humhub\modules\thiscoveryFeed\widgets\Shortcuts;
+use humhub\modules\thiscoveryFeed\widgets\UpcomingEvents;
 use yii\helpers\Url;
 
 FeedAsset::register($this);
@@ -37,12 +39,13 @@ $renderWidget = static function (string $id) use ($user): string {
     return match ($id) {
         WidgetCatalog::SHORTCUTS => Shortcuts::widget(['user' => $user]),
         WidgetCatalog::ANNOUNCEMENTS => Announcements::widget(['user' => $user]),
+        WidgetCatalog::EVENTS => UpcomingEvents::widget(['user' => $user]),
+        WidgetCatalog::FORMS => OpenForms::widget(['user' => $user]),
         default => '',
     };
 };
 
 $visible = array_merge($layout['left'], $layout['right']);
-$allowed = array_merge($adminLayout['left'], $adminLayout['right']);
 ?>
 
 <?= Html::beginContainer() ?>
@@ -68,10 +71,7 @@ $bannerUrl = Yii::$app->getModule('thiscovery-feed')->showBanner() ? BannerServi
         <?= Html::beginForm(['layout'], 'post') ?>
             <?php foreach (['left' => Yii::t('ThiscoveryFeedModule.base', 'Left column'), 'right' => Yii::t('ThiscoveryFeedModule.base', 'Right column')] as $column => $columnLabel): ?>
                 <?php
-                $columnWidgets = array_values(array_filter(
-                    $allowed,
-                    static fn(string $id): bool => WidgetCatalog::column($id) === $column,
-                ));
+                $columnWidgets = $adminLayout[$column];
                 if ($columnWidgets === []) {
                     continue;
                 }
@@ -110,7 +110,7 @@ $bannerUrl = Yii::$app->getModule('thiscovery-feed')->showBanner() ? BannerServi
 
 <div class="<?= Html::encode($gridClass) ?>">
     <?php if ($layout['left'] !== []): ?>
-        <aside class="tc-feed__left" aria-label="<?= Html::encode(Yii::t('ThiscoveryFeedModule.base', 'Shortcuts')) ?>">
+        <aside class="tc-feed__left" aria-label="<?= Html::encode(Yii::t('ThiscoveryFeedModule.base', 'Left column')) ?>">
             <?php foreach ($layout['left'] as $widgetId): ?>
                 <?= $renderWidget($widgetId) ?>
             <?php endforeach; ?>
@@ -238,7 +238,7 @@ $bannerUrl = Yii::$app->getModule('thiscovery-feed')->showBanner() ? BannerServi
     </main>
 
     <?php if ($layout['right'] !== []): ?>
-        <aside class="tc-feed__right" aria-label="<?= Html::encode(Yii::t('ThiscoveryFeedModule.base', 'Announcements')) ?>">
+        <aside class="tc-feed__right" aria-label="<?= Html::encode(Yii::t('ThiscoveryFeedModule.base', 'Right column')) ?>">
             <?php foreach ($layout['right'] as $widgetId): ?>
                 <?= $renderWidget($widgetId) ?>
             <?php endforeach; ?>

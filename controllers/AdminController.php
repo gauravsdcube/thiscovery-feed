@@ -50,6 +50,7 @@ class AdminController extends Controller
         if (Yii::$app->request->isPost) {
             $model->widgets = [];
             $model->order = [];
+            $model->columns = [];
         }
 
         $loaded = $model->load(Yii::$app->request->post());
@@ -57,8 +58,9 @@ class AdminController extends Controller
         if ($loaded && $model->validate()) {
             $widgets = is_array($model->widgets) ? $model->widgets : [];
             $order = is_array($model->order) ? $model->order : [];
+            $columns = is_array($model->columns) ? $model->columns : [];
             $selected = array_values(array_filter($widgets, 'is_string'));
-            $saved = LayoutService::fromSelection($selected, $order);
+            $saved = LayoutService::fromSelection($selected, $order, $columns);
             $module->settings->set(Module::SETTING_PLACEMENT, $model->placement);
             $module->settings->set(Module::SETTING_SHOW_IN_TOP_MENU, $model->showInTopMenu ? '1' : '0');
             $module->settings->set(Module::SETTING_ANNOUNCEMENT_LIMIT, (string) $model->announcementLimit);

@@ -1,4 +1,4 @@
-# Thiscovery Feed 1.0.5
+# Thiscovery Feed 1.0.6
 
 **18 November 2026**
 
@@ -6,8 +6,9 @@ Copyright (c) 2026 D Cube Consulting. All rights reserved.
 
 ## Highlights
 
-- Administrators can upload a banner and choose whether it is shown across the top of the feed.
-- The banner preview stays inside the feed configuration panel.
+- Upcoming events lists the next events in the spaces a member belongs to.
+- Forms lists open forms and surveys that member can still complete. A started form is marked in progress.
+- Each widget can be placed on the left or the right of the feed.
 
 ## Requirements
 
@@ -16,7 +17,7 @@ Copyright (c) 2026 D Cube Consulting. All rights reserved.
 
 ## Upgrade
 
-Replace the module with this release. Open **Administration → Thiscovery Feed**, upload a PNG, JPG, GIF, or WebP image, and turn on **Show a banner on the feed**.
+Replace the module with this release. Open **Administration → Thiscovery Feed**, turn on Upcoming events and Forms, and choose a side for each. Members who have already customized their feed see a newly enabled widget after they reset to the default.
 
 ## License
 

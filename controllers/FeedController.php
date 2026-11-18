@@ -160,9 +160,10 @@ class FeedController extends Controller
                 $order = [];
             }
             $selected = array_values(array_filter($selected, 'is_string'));
+            $adminLayout = $module->adminLayout();
             $layout = LayoutService::resolve(
-                $module->adminLayout(),
-                LayoutService::fromSelection($selected, $order),
+                $adminLayout,
+                LayoutService::fromSelection($selected, $order, LayoutService::columnMap($adminLayout)),
             );
             $settings->set(Module::SETTING_USER_LAYOUT, json_encode($layout, JSON_THROW_ON_ERROR));
         }

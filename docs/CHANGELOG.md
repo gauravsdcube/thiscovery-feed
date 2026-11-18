@@ -4,6 +4,10 @@ Copyright (c) 2026 D Cube Consulting. All rights reserved.
 
 All notable changes to this module are documented in this file.
 
+## 1.0.6 (November 18, 2026)
+
+- Enh: Upcoming events and open forms can be shown on either side of the feed
+
 ## 1.0.5 (November 18, 2026)
 
 - Enh: Administrators can upload a banner and choose whether it is shown across the top of the feed

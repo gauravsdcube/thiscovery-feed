@@ -64,15 +64,26 @@ $this->registerCss('.tc-feed-banner-preview-wrap{max-width:100%;overflow:hidden}
         <fieldset class="mb-3">
             <legend class="form-label"><?= Yii::t('ThiscoveryFeedModule.base', 'Default widgets') ?></legend>
             <?php foreach ($catalog as $id => $definition): ?>
-                <div class="d-flex align-items-center gap-3 mb-2">
+                <?php
+                $side = in_array($id, $layout['left'], true) ? 'left' : (in_array($id, $layout['right'], true) ? 'right' : $definition['column']);
+                $position = array_search($id, $layout[$side], true);
+                ?>
+                <div class="d-flex align-items-center flex-wrap gap-3 mb-2">
                     <label class="mb-0">
                         <?= Html::checkbox($model->formName() . '[widgets][]', in_array($id, $visible, true), ['value' => $id]) ?>
                         <strong><?= Html::encode($module->widgetLabel($id)) ?></strong>
                         <span class="text-muted">— <?= Html::encode($module->widgetDescription($id)) ?></span>
                     </label>
                     <label class="mb-0 d-flex align-items-center gap-2">
+                        <span><?= Yii::t('ThiscoveryFeedModule.base', 'Side') ?></span>
+                        <?= Html::dropDownList($model->formName() . '[columns][' . $id . ']', $side, [
+                            'left' => Yii::t('ThiscoveryFeedModule.base', 'Left'),
+                            'right' => Yii::t('ThiscoveryFeedModule.base', 'Right'),
+                        ], ['class' => 'form-select form-select-sm', 'style' => 'width: auto']) ?>
+                    </label>
+                    <label class="mb-0 d-flex align-items-center gap-2">
                         <span><?= Yii::t('ThiscoveryFeedModule.base', 'Order') ?></span>
-                        <?= Html::input('number', $model->formName() . '[order][' . $id . ']', (string) ((array_search($id, $layout[$definition['column']], true) ?: 0) + 1), [
+                        <?= Html::input('number', $model->formName() . '[order][' . $id . ']', (string) ($position === false ? 1 : $position + 1), [
                             'min' => 1,
                             'max' => 20,
                             'class' => 'form-control form-control-sm',
